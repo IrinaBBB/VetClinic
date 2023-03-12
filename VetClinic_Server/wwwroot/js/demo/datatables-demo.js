@@ -1,5 +1,7 @@
 // Call the dataTables jQuery plugin
 function startTable() {
-    $('#dataTable').DataTable();
+    $(document).ready(function() {
+        $('#dataTable').DataTable();
+    });
 }
 
