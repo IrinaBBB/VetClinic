@@ -19,6 +19,7 @@ namespace DataAccess.Data
         public int EscapeAttempts { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
+        public DateTime? DateUpdated { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set;}
     }

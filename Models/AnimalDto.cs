@@ -6,9 +6,9 @@ namespace Models
     public class AnimalDto
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "Please enter room name")]
+        [Required(ErrorMessage = "Please enter a pet name")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Please enter species")]
         public string Species { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
