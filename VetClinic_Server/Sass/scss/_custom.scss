@@ -1,0 +1,10 @@
+﻿$primary-color: #35dd02;
+$primary-variant-color: #2fc405;
+$accent-color: #76f952;
+$light-color: #abf296;
+$dark-color: #227f08;
+
+
+.navbar-nav.sidebar.sidebar-dark {
+    background-image: linear-gradient(to right bottom, rgba($dark-color, 0.90), rgba(lighten($primary-color, 10%), 0.90))
+}
