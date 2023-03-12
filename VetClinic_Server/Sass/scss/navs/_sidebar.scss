@@ -27,6 +27,14 @@
             }
         }
 
+        .nav-link.active {
+            font-weight: 700;
+            color: $white;
+
+            i {
+                color: $white;
+            }
+        }
         // Accordion
         .collapse {
             position: absolute;
@@ -173,13 +181,16 @@
         margin-bottom: 1rem;
         padding: 1rem;
         background-color: fade-out($black, 0.9);
+
         .sidebar-card-illustration {
             height: 3rem;
             display: block;
         }
+
         .sidebar-card-title {
             font-weight: bold;
         }
+
         p {
             font-size: 0.75rem;
             color: fade-out($white, 0.5);
