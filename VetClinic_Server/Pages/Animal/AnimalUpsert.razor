@@ -1,5 +1,8 @@
 ﻿@page "/animals/create"
+@using Business.Repository.IRepository;
 @using Models;
+@inject IAnimalRepository AnimalRepository;
+@inject NavigationManager NavigationManager;
 
 
 <div class="row justify-content-start">
@@ -63,7 +66,8 @@
     private string Title { get; set; } = "Register a new patient"; 
     private async Task HandleHotelRoomUpsert()
     {
-        AnimalModel.Species = "Button clicked";    
+        await AnimalRepository.CreateAnimal(AnimalModel);
+        NavigationManager.NavigateTo("/animals");
     }
 }
 

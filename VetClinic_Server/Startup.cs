@@ -1,3 +1,5 @@
+using Business.Repository;
+using Business.Repository.IRepository;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -32,6 +34,7 @@ namespace VetClinic_Server
                     Configuration.GetConnectionString("DefaultConnection")
                 ));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();

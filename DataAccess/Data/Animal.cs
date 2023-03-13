@@ -5,6 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Data
 {
+    public enum Sex
+    {
+        M, F, Unknown
+    }
+
     public class Animal
     {
         public int Id { get; set; }
@@ -12,6 +17,8 @@ namespace DataAccess.Data
         public string Name { get; set; }
         [Required]
         public string Species { get; set; }
+
+        public Sex Sex { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? WeightInKilos { get; set; }
