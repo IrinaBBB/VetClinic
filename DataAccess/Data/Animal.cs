@@ -16,6 +16,7 @@ namespace DataAccess.Data
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? WeightInKilos { get; set; }
         public bool? Neutered { get; set; }
+        public bool Chipped { get; set; }
         public int EscapeAttempts { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
