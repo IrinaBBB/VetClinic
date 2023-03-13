@@ -1,0 +1,53 @@
+﻿@page "/animals/create"
+
+<div class="row justify-content-start">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Create a new patient</h6>
+            </div>
+            <div class="card-body">
+                <form class="custom-form">
+                    <div class="custom-form__group">
+                        <input type="text" class="custom-form__input" placeholder="Name" id="name" required/>
+                        <label for="name" class="custom-form__label">Name</label>
+                    </div>
+                    <div class="custom-form__group">
+                        <input type="email" class="custom-form__input" placeholder="Email" id="email" required />
+                        <label for="email" class="custom-form__label">Email</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control form-control-user"
+                               id="exampleInputEmail" aria-describedby="emailHelp"
+                               placeholder="Enter Email Address...">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control form-control-user"
+                               id="exampleInputEmail" aria-describedby="emailHelp"
+                               placeholder="Enter Email Address...">
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                            <input type="checkbox" class="custom-control-input" id="customCheck">
+                            <label class="custom-control-label" for="customCheck">
+                                Remember
+                                Me
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="inputGroupSelect01">
+                            <option selected>Type</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                    <a href="index.html" class="btn btn-primary btn-user btn-block">
+                        Login
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

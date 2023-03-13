@@ -8,3 +8,76 @@ $dark-color: #227f08;
 .navbar-nav.sidebar.sidebar-dark {
     background-image: linear-gradient(to right bottom, rgba($dark-color, 0.90), rgba(lighten($primary-color, 10%), 0.90))
 }
+
+// Custom Form
+.custom-form {
+
+    &__group:not(:last-child) {
+        margin-bottom: 0.2rem;
+    }
+
+    &__input {
+        padding: .6rem 1rem;
+        background: $white;
+        border: none;
+        border-radius: 7px;
+        font-family: inherit;
+        color: $gray-800;
+        border: 2px solid $gray-200;
+        width: 100%;
+        display: block;
+
+        &:focus, &:focus-visible {
+            outline: none;
+            border: 2px solid $primary;
+        }
+
+        &:valid {
+            background: $gray-100;
+        }
+
+        &:focus:invalid {
+            background: $gray-100;
+            border: 2px solid $danger;
+        }
+    }
+
+    &__label {
+        font-family: inherit;
+        color: inherit;
+        font-size: 14px;
+        margin-left: 1.1rem;
+        display: block;
+        transition: all .3s;
+    }
+
+    &__input:placeholder-shown + &__label {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+select:-webkit-autofill,
+select:-webkit-autofill:hover
+{
+    border: 2px solid $gray-200;
+    -webkit-text-fill-color: $gray-800;
+    -webkit-box-shadow: 0 0 0px 1000px $gray-100 inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+    border: 2px solid $primary;
+    -webkit-text-fill-color: $gray-800;
+    -webkit-box-shadow: 0 0 0px 1000px $gray-100 inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+
