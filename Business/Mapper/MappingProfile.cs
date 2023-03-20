@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccess.Data;
+using DataAccess.Entities;
 using Model;
 using Models;
 

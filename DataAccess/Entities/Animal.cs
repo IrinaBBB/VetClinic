@@ -3,21 +3,21 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataAccess.Data
+namespace DataAccess.Entities
 {
     public enum Sex
     {
-        Male, Female, Unknown
+        Male = 1, Female = 2, Unknown = 0
     }
 
     public enum Neutered
     {
-        Yes, No, Unknown
+        Yes = 1, No = 2, Unknown = 0
     }
 
     public enum Chipped
     {
-        Yes, No, Unknown
+        Yes = 1, No = 2, Unknown = 0
     }
 
     public class Animal
@@ -26,7 +26,6 @@ namespace DataAccess.Data
         [Required]
         public string Name { get; set; }
         [Required]
-        public string Species { get; set; }
         public bool DateOfBirthIsKnown { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public Neutered Neutered { get; set; }
@@ -36,14 +35,13 @@ namespace DataAccess.Data
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? WeightInKilos { get; set; }
         public int EscapeAttempts { get; set; }
-        
+
         public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
         public DateTime? DateUpdated { get; set; }
         public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set;}
-
-        //public int? SpeciesId { get; set; }
-        //public Species Species { get; set; }
+        public string UpdatedBy { get; set; }
+        public int? SpeciesId { get; set; }
+        public Species? Species { get; set; }
     }
 }
 

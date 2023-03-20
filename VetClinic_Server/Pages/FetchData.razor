@@ -1,13 +1,15 @@
 ﻿@page "/fetchdata"
+@using DataAccess.Data;
+@using Microsoft.EntityFrameworkCore;
 
-@using VetClinic_Server.Data
-@inject WeatherForecastService ForecastService
+
+@inject ApplicationDbContext Context
 
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
 
-@if (forecasts == null)
+@if (animals == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -16,20 +18,24 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
+                <th>Name</th>
+                <th>Neutered</th>
                 <th>Temp. (F)</th>
                 <th>Summary</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var entity in species)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@entity.Name</td>
+                    <td>@entity.Description</td>
+                    @foreach(var animal in entity.Animals)
+                    {
+                        <div>@animal.Name @animal.DateOfBirthIsKnown @animal.DateOfBirth</div>
+                    }
+                    <td></td>
+                    <td></td>
                 </tr>
             }
         </tbody>
@@ -37,10 +43,12 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private List<DataAccess.Entities.Animal> animals;
+    private List<DataAccess.Entities.Species> species;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        animals = Context.Animals.ToList();
+        species = Context.Species.ToList();
     }
 }

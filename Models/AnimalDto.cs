@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using DataAccess.Data;
 using System;
+using DataAccess.Entities;
 
 namespace Models
 {

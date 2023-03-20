@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace DataAccess.Data
 {
@@ -10,6 +12,8 @@ namespace DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            Seed.addData(modelBuilder);
+
             modelBuilder.Entity<Animal>()
                 .Property(a => a.Sex)
                 .HasDefaultValue(Sex.Unknown);  
@@ -21,6 +25,13 @@ namespace DataAccess.Data
             modelBuilder.Entity<Animal>()
                 .Property(a => a.Neutered)
                 .HasDefaultValue(Neutered.Unknown);
+
+            modelBuilder.Entity<Species>(entity =>
+            {
+                entity.HasMany(x => x.Animals)
+                .WithOne(x => x.Species)
+                .OnDelete(DeleteBehavior.SetNull);
+            });
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.Repository.IRepository;
 using DataAccess.Data;
+using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Model;
 using Models;

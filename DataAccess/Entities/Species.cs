@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace DataAccess.Data
+namespace DataAccess.Entities
 {
     public class Species
     {
@@ -11,6 +11,6 @@ namespace DataAccess.Data
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        //public ICollection<Animal> animals { get; set; }
+        public List<Animal> Animals { get; set; } = new List<Animal>();
     }
 }
