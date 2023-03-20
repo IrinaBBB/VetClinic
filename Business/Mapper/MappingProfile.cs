@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Data;
+using Model;
 using Models;
 
 namespace Business.Mapper
@@ -10,6 +11,9 @@ namespace Business.Mapper
         {
             CreateMap<AnimalDto, Animal>();
             CreateMap<Animal, AnimalDto>();
+
+            CreateMap<SpeciesDto, Species>();
+            CreateMap<Species, SpeciesDto>();
         }
     }
 }

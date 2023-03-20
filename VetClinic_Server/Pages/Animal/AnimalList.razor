@@ -1,6 +1,8 @@
 ﻿@page "/animals"
+@using Models;
 @using VetClinic_Server.Data;
-@inject WeatherForecastService ForecastService
+@inject WeatherForecastService ForecastService;
+@inject IAnimalRepository AnimalRepository;
 
  <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -13,7 +15,7 @@
     </a>
 </div>
 
-@if (forecasts == null)
+@if (Animals == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -27,36 +29,38 @@ else
                          <tr>
                             <th>Name</th>
                             <th>Species</th>
+                            <th>Sex</th>
                             <th>Weight In Kilos</th>                        
                             <th>Neutered</th>
                             <th>Escape Attempts</th>
-                            <th>Chiped</th>
+                            <th>Chipped</th>
                             <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                          <th>Name</th>
+                            <th>Name</th>
                             <th>Species</th>
+                            <th>Sex</th>
                             <th>Weight In Kilos</th>                        
                             <th>Neutered</th>
                             <th>Escape Attempts</th>
-                            <th>Chiped</th>
+                            <th>Chipped</th>
                             <th>&nbsp;</th>
                         </tr>
                     </tfoot>
                     <tbody>
-                        @foreach (var forecast in forecasts)
+                        @foreach (var animal in Animals)
                         {
                             <tr>
-                                <td>@forecast.Date.ToShortDateString()</td>
-                                <td>@forecast.TemperatureC</td>
-                                <td>@forecast.TemperatureF</td>
-                                <td>@forecast.Summary</td>
-                                <td>@forecast.Summary</td>
-                            <td></td>
-                                <td>
-                                </td>
+                                <td>@animal.Name</td>
+                                <td>@animal.Species</td>
+                                <td>@animal.Sex</td>
+                                <td>@GetWeightInKilos(animal.WeightInKilos)</td>
+                                <td>@animal.Neutered</td>
+                                <td>@animal.EscapeAttempts</td>
+                                <td>@animal.Chipped</td>
+                                <th>&nbsp;</th>
                             </tr>
                         }
                     </tbody>
@@ -89,11 +93,35 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private IEnumerable<AnimalDto> Animals;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        Animals = await AnimalRepository.GetAllAnimals();
+    }
+
+    private string ReturnNeutered(bool? neutered)
+    {
+        if (neutered == null) return "Unknown";
+        return ((bool)neutered ? "Yes" : "No");
+    }
+
+    private string GetWeightInKilos(decimal? weight)
+    {
+        if (weight is null) return "Unknown";
+        else
+        {
+            return weight.ToString();
+        }
+    }
+
+    private string NullableBoolToYesNoOrUnknown(bool? boolValue)
+    {
+        if (boolValue is null) return "Unknown";
+        else
+        {
+            return (bool)boolValue ? "Yes" : "No";
+        }
     }
 }
 

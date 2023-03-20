@@ -35,6 +35,7 @@ namespace VetClinic_Server
                 ));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IAnimalRepository, AnimalRepository>();
+            services.AddScoped<ISpeciesRepository, SpeciesRepository>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
