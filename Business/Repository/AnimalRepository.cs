@@ -1,83 +1,83 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Business.Repository.IRepository;
+using Model;
+using AutoMapper;
 using DataAccess.Data;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Repository
 {
     public class AnimalRepository : IAnimalRepository
     {
-        private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _db;
+        private readonly ILogger _logger;
 
-        public AnimalRepository(ApplicationDbContext db, IMapper mapper)
+        public AnimalRepository(IMapper mapper, ApplicationDbContext db, ILogger logger)
         {
-            _db = db;
             _mapper = mapper;
+            _db = db;
+            _logger = logger;
         }
 
-        public async Task<AnimalDto> CreateAnimal(AnimalDto animalDto)
+        public async Task<AnimalDto> CreateAnimalAsync(AnimalDto animalDto)
         {
             var animal = _mapper.Map<AnimalDto, Animal>(animalDto);
-            animal.DateRegistered = DateTime.Now;
+            animal.DateRegistered = DateTime.UtcNow;
             animal.CreatedBy = "";
-            
-            var addedAnimal = await _db.Animals.AddAsync(animal);
+
+            var createdAnimal = _db.Animals.Add(animal);
             await _db.SaveChangesAsync();
-
-            return _mapper.Map<Animal, AnimalDto>(addedAnimal.Entity);
+            return _mapper.Map<Animal, AnimalDto>(createdAnimal.Entity);
         }
 
-        public async Task<int> DeleteAnimal(int id)
-        {
-            var animalToDelete = await _db.Animals.FindAsync(id);
-            if (animalToDelete == null) return 0;
-            _db.Animals.Remove(animalToDelete);
-            return await _db.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<AnimalDto>> GetAllAnimals()
+        public async Task<AnimalDto> UpdateAnimalAsync(int animalId, AnimalDto animalDto)
         {
             try
             {
-                var animalDtos =
-                    _mapper.Map<IEnumerable<Animal>, IEnumerable<AnimalDto>>(_db.Animals);
-                return animalDtos; 
+                if (animalId != animalDto.Id) return null;
+
+                var animalDetails = await _db.Animals.FindAsync(animalId);
+                var animal = _mapper.Map(animalDto, animalDetails);
+                animal.UpdatedBy = "";
+                animal.DateUpdated = DateTime.UtcNow;
+                var updatedAnimal = _db.Animals.Update(animal);
+                await _db.SaveChangesAsync();
+                return _mapper.Map<Animal, AnimalDto>(updatedAnimal.Entity);
             }
-            catch {return null;}
-        }
-
-        public async Task<AnimalDto> GetAnimal(int animalId)
-        {
-            try
+            catch (Exception ex)
             {
-                var animal = await _db.Animals.FirstOrDefaultAsync(x => x.Id == animalId);
-                return _mapper.Map<Animal, AnimalDto>(animal);
-            } catch { return null; } 
-        }
-
-        public async Task<AnimalDto> UpdateAnimal(int animalId, AnimalDto animalDto)
-        {
-            try
-            {
-                if (animalId == animalDto.Id)
-                {
-                    var animalToUpdate = await _db.Animals.FindAsync(animalId);
-                    var animal = _mapper.Map(animalDto, animalToUpdate);
-                    animal.DateUpdated = DateTime.Now;
-                    animal.UpdatedBy = "";
-                    var updatedAnimal = _db.Animals.Update(animal);
-                    await _db.SaveChangesAsync();
-                    return _mapper.Map<Animal, AnimalDto>(updatedAnimal.Entity);
-                }
-                else return null;
+                _logger.LogInformation("Error updating Animal with id - {id} : {message}",
+                    animalId, ex.Message);
+                return null;
             }
-            catch { return null; }
+        }
+
+        public async Task<AnimalDto> GetAnimalAsync(int animalId)
+        {
+            try
+            {
+                var animalDto = _mapper.Map<Animal, AnimalDto>(
+                    await _db.Animals.Include(x => x.Species)
+                        .FirstOrDefaultAsync(x => x.Id == animalId));
+                return animalDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error getting animal with id - {id} : {message}",
+                    animalId, ex.Message);
+                return null;
+            }
+        }
+
+        public IEnumerable<AnimalDto> GetAllAnimals()
+        {
+            return _mapper.Map<IEnumerable<Animal>, IEnumerable<AnimalDto>>(
+                _db.Animals.Include(x => x.Species));
         }
     }
 }

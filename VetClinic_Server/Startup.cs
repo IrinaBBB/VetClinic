@@ -2,18 +2,13 @@ using Business.Repository;
 using Business.Repository.IRepository;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using VetClinic_Server.Data;
+using Microsoft.Extensions.Logging;
 
 namespace VetClinic_Server
 {
@@ -34,11 +29,11 @@ namespace VetClinic_Server
                     Configuration.GetConnectionString("DefaultConnection")
                 ));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("DefaultLogger"));
             services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<ISpeciesRepository, SpeciesRepository>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,10 +1,13 @@
 ﻿@page "/animals/create"
-@using Model;
-@using Models;
-@inject IAnimalRepository AnimalRepository;
-@inject ISpeciesRepository SpeciesRepository;
-@inject NavigationManager NavigationManager;
+@page "/animals/edit/{Id:int}"
+@using CatHotel.Server.Helpers
 
+
+@inject IAnimalRepository _animalRepository
+@inject ISpeciesRepository _speciesRepository
+@inject ILogger _logger
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
 
 <div class="row justify-content-start">
     <div class="col-xl-10 col-lg-10 col-md-9">
@@ -13,87 +16,94 @@
                 <h4 class="m-0 font-weight-bold text-primary">@Title</h4>
             </div>
             <div class="card-body">
-               <EditForm Model="AnimalModel" class="custom-form" OnValidSubmit="HandleHotelRoomUpsert">
-                    <DataAnnotationsValidator />
+                <EditForm Model="AnimalModel" class="custom-form" OnValidSubmit="HandleAnimalUpsert">
                     <div class="row justify-content-start">
                         <div class="custom-form__group  col-8">
-                            <ValidationMessage For="() => AnimalModel.Name"/>
-                            <InputText placeholder="Name" class="custom-form__input" @bind-Value="AnimalModel.Name" />
-                            <label for="name" class="custom-form__label">Name</label>
-                        </div>
-                      @*  <div class="custom-form__group col-4">
                             <ValidationMessage For="() => AnimalModel.Name" />
-                            <InputText placeholder="Date Of Birth" class="custom-form__input" @bind-Value="AnimalModel.Name" />
-                            <label for="name" class="custom-form__label">Date of Birth</label>
-                        </div>*@
+                            <InputText id="nameOfPet" placeholder="Name" class="custom-form__input" @bind-Value="AnimalModel.Name" />
+                            <label for="nameOfPet" class="custom-form__label">Name</label>
+                        </div>
+                        <div class="custom-form__group col-4 mt-1">
+                            <div>
+                                <ValidationMessage For="() => AnimalModel.Name" />
+                                <InputDate id="dateOfBirth" placeholder="Date Of Birth" class="custom-form__input" @bind-Value="AnimalModel.DateOfBirth" />
+                                <label for="dateOfBirth" class="custom-form__label">Date of Birth</label>
+                            </div>
+
+                        </div>
                     </div>
                     <div class="row justify-content-start">
-                        @*<div class="custom-form__group col-6">
-                            <ValidationMessage For="() => AnimalModel.Species" />
-                            <InputText id="species" placeholder="Species" class="custom-form__input" @bind-Value="AnimalModel.Species" />
-                            <label for="species" class="custom-form__label">Species</label>
-                        </div>*@
                         <div class="custom-form__group col-6">
                             <div class="custom-form__group">
                                 <ValidationMessage For="() => AnimalModel.Species" />
-                                <InputSelect class="custom-form__input" @bind-Value="AnimalModel.Species">
-                                    <option selected value="">Species</option>
-                                    @foreach (var species in Species)
+                                <InputSelect id="species" class="custom-form__input" @bind-Value="AnimalModel.SpeciesId">
+                                    @foreach (var species in SpeciesList)
                                     {
-                                        <option value="@species.Name">@species.Name</option>
-                                    }                         
+                                        <option value="@species.Id">@species.Name</option>
+                                    }
                                 </InputSelect>
+                                <label for="species" class="custom-form__label">Species</label>
                             </div>
                         </div>
-                        <div class="custom-control custom-checkbox mb-4 ml-3">
-                            <InputCheckbox class="custom-control-input" id="neutered" @bind-Value="AnimalModel.DateOfBirthIsKnown"></InputCheckbox>
-                            <label class="custom-control-label" for="neutered">
-                                Neutered
-                            </label>
-                        </div>
-@*                        <div class="custom-form__group col-3">
-                            <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
-                            <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
-                            <label for="escapeAttempts" class="custom-form__label">Sex</label>
+                        <div class="custom-form__group col-3">
+                            <div class="custom-form__group">
+                                <ValidationMessage For="() => AnimalModel.Sex" />
+                                <InputSelect id="sex" class="custom-form__input" @bind-Value="AnimalModel.Sex">
+                                    @foreach (var sex in Enum.GetValues(typeof(Sex)))
+                                    {
+                                        <option value="@sex">@sex.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <label for="sex" class="custom-form__label">Sex</label>
+                            </div>
                         </div>
                         <div class="custom-form__group col-3">
-                            <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
-                            <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
-                            <label for="escapeAttempts" class="custom-form__label">Neutered</label>
-                        </div>*@
+                            <div class="custom-form__group">
+                                <ValidationMessage For="() => AnimalModel.Neutered" />
+                                <InputSelect id="neutered" class="custom-form__input" @bind-Value="AnimalModel.Neutered">
+                                    @foreach (var neutered in Enum.GetValues(typeof(Neutered)))
+                                    {
+                                        <option value="@neutered">@neutered.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <label for="neutered" class="custom-form__label">Neutered</label>
+                            </div>
+                        </div>
                     </div>
-@*                    <div class="row justify-content-start">
-                        <div class="custom-form__group col-6">
+                    <div class="row justify-content-start">
+                        <div class="custom-form__group col-4">
+                            <div class="custom-form__group">
+                                <ValidationMessage For="() => AnimalModel.Chipped" />
+                                <InputSelect id="chipped" class="custom-form__input" @bind-Value="AnimalModel.Chipped">
+                                    @foreach (var chipped in Enum.GetValues(typeof(Chipped)))
+                                    {
+                                        <option value="@chipped">@chipped.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <label for="chipped" class="custom-form__label">Chipped</label>
+                            </div>
+                        </div>
+                        <div class="custom-form__group col-4">
                             <ValidationMessage For="() => AnimalModel.WeightInKilos" />
-                            <InputNumber id="weightInKilos" placeholder="Weight In Kilos (Use Comma)" class="custom-form__input" @bind-Value="AnimalModel.WeightInKilos" />
-                            <label for="weightInKilos" class="custom-form__label">Weight In Kilos (Use Comma)</label>
+                            <InputNumber id="weight" placeholder="Weight in Kilos" class="custom-form__input" @bind-Value="AnimalModel.WeightInKilos" />
+                            <label for="weight" class="custom-form__label">Weight In Kilos</label>
                         </div>
-                        <div class="custom-form__group col-3">
-                            <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
-                            <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
-                            <label for="escapeAttempts" class="custom-form__label">Chipped</label>
+                        <div class="custom-form__group col-4">
+                            <div class="custom-form__group">
+                                <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
+                                <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
+                                <label for="escapeAttempts" class="custom-form__label">Escape Attempts</label>
+                            </div>
                         </div>
-                        <div class="custom-form__group col-3">
-                            <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
-                            <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
-                            <label for="escapeAttempts" class="custom-form__label">Escape Attempts</label>
-                        </div>
-                    </div>*@
-@*                    <div class="custom-control custom-checkbox mb-4 ml-3">
-                        <InputCheckbox class="custom-control-input" id="neutered" @bind-Value="AnimalModel.Neutered"></InputCheckbox>
-                        <label class="custom-control-label" for="neutered">
-                            Neutered
-                        </label>
-                    </div>*@
-                            
+                    </div>
                     <div class="d-sm-flex align-items-center justify-content-end my-2">
-                        <a href="/animals/list" class="btn btn-secondary btn-icon-split mr-3">
+                        <a href="/animals" class="btn btn-secondary btn-icon-split mr-3">
                             <span class="icon text-white-50">
                                 <i class="fas fa-arrow-left"></i>
                             </span>
                             <span class="text px-4">Cancel</span>
                         </a>
-                        <button href="#" class="btn btn-primary btn-icon-split">
+                        <button class="btn btn-primary btn-icon-split">
                             <span class="icon text-white-50">
                                 <i class="fas fa-check"></i>
                             </span>
@@ -107,33 +117,50 @@
 </div>
 
 @code {
-    private AnimalDto AnimalModel { get; set; } = new AnimalDto();
-   
-    private string Title { get; set; } = "Register a new patient"; 
 
-    private async Task HandleHotelRoomUpsert()
-    {
-        await AnimalRepository.CreateAnimal(AnimalModel);
-        NavigationManager.NavigateTo("/animals");
-    }
+    [Parameter]
+    public int? Id { get; set; }
 
-    private IEnumerable<SpeciesDto> Species;
+    private string Title { get; set; } = "Register a new patient";
+
+    private static AnimalDto AnimalModel { get; set; } = new AnimalDto();
+
+    private static IEnumerable<SpeciesDto> SpeciesList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Species = await SpeciesRepository.GetAllSpecies();
+        SpeciesList = _speciesRepository.GetAllSpecies();
+        if (Id != null)
+        {
+            Title = "Edit patient info";
+            AnimalModel = await _animalRepository.GetAnimalAsync(Id.Value);
+        }
+        else
+        {
+            AnimalModel = new AnimalDto();
+        }
     }
+
+    private async Task HandleAnimalUpsert()
+    {
+        try
+        {
+            if (AnimalModel.Id != 0 && Title == "Edit patient info")
+            {
+                var updateAnimalResult = await _animalRepository.UpdateAnimalAsync(AnimalModel.Id, AnimalModel);
+                await _jsRuntime.ToastrSuccess("Patient info updated successfully.");
+            }
+            else
+            {
+                var createdResult = await _animalRepository.CreateAnimalAsync(AnimalModel);
+                await _jsRuntime.ToastrSuccess("New patient created successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+        _navigationManager.NavigateTo("animals");
+    }
+
 }
-
-
-@*<div class="custom-form__group">
-    <select class="custom-form__input" id="inputGroupSelect01">
-        <option selected>Type</option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
-    </select>
-</div>      
-<a href="index.html" class="btn btn-primary btn-user btn-block py-2">
-    Login
-</a>*@

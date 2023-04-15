@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230320124930_InitialMigration")]
+    [Migration("20230414165134_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,9 +38,6 @@ namespace DataAccess.Migrations
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("DateOfBirthIsKnown")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("DateRegistered")
                         .HasColumnType("datetime2");
@@ -86,8 +83,7 @@ namespace DataAccess.Migrations
                             Id = 1,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirthIsKnown = false,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 688, DateTimeKind.Utc).AddTicks(4331),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 450, DateTimeKind.Utc).AddTicks(3372),
                             EscapeAttempts = 0,
                             Name = "Lad",
                             Neutered = 0,
@@ -100,9 +96,8 @@ namespace DataAccess.Migrations
                             Id = 2,
                             Chipped = 1,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 3, 20, 13, 49, 29, 688, DateTimeKind.Local).AddTicks(7089),
-                            DateOfBirthIsKnown = true,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 688, DateTimeKind.Utc).AddTicks(7026),
+                            DateOfBirth = new DateTime(2023, 4, 14, 18, 51, 33, 450, DateTimeKind.Local).AddTicks(7109),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 450, DateTimeKind.Utc).AddTicks(7016),
                             EscapeAttempts = 0,
                             Name = "Inka",
                             Neutered = 1,
@@ -115,8 +110,7 @@ namespace DataAccess.Migrations
                             Id = 3,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirthIsKnown = false,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8243),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3674),
                             EscapeAttempts = 0,
                             Name = "Dundy",
                             Neutered = 0,
@@ -129,8 +123,7 @@ namespace DataAccess.Migrations
                             Id = 4,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirthIsKnown = false,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8253),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3702),
                             EscapeAttempts = 0,
                             Name = "Urshy",
                             Neutered = 0,
@@ -143,9 +136,8 @@ namespace DataAccess.Migrations
                             Id = 5,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 3, 20, 13, 49, 29, 691, DateTimeKind.Local).AddTicks(8256),
-                            DateOfBirthIsKnown = true,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8255),
+                            DateOfBirth = new DateTime(2023, 4, 14, 18, 51, 33, 455, DateTimeKind.Local).AddTicks(3707),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3705),
                             EscapeAttempts = 6,
                             Name = "Sebastian",
                             Neutered = 2,
@@ -158,9 +150,8 @@ namespace DataAccess.Migrations
                             Id = 6,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 3, 20, 13, 49, 29, 691, DateTimeKind.Local).AddTicks(8298),
-                            DateOfBirthIsKnown = true,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8297),
+                            DateOfBirth = new DateTime(2023, 4, 14, 18, 51, 33, 455, DateTimeKind.Local).AddTicks(3769),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3768),
                             EscapeAttempts = 0,
                             Name = "Jessie",
                             Neutered = 1,
@@ -173,9 +164,8 @@ namespace DataAccess.Migrations
                             Id = 7,
                             Chipped = 1,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 3, 20, 13, 49, 29, 691, DateTimeKind.Local).AddTicks(8304),
-                            DateOfBirthIsKnown = true,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8303),
+                            DateOfBirth = new DateTime(2023, 4, 14, 18, 51, 33, 455, DateTimeKind.Local).AddTicks(3778),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3776),
                             EscapeAttempts = 3,
                             Name = "Quiffy",
                             Neutered = 1,
@@ -188,8 +178,7 @@ namespace DataAccess.Migrations
                             Id = 8,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirthIsKnown = false,
-                            DateRegistered = new DateTime(2023, 3, 20, 12, 49, 29, 691, DateTimeKind.Utc).AddTicks(8306),
+                            DateRegistered = new DateTime(2023, 4, 14, 16, 51, 33, 455, DateTimeKind.Utc).AddTicks(3782),
                             EscapeAttempts = 0,
                             Name = "Woffy",
                             Neutered = 1,
@@ -235,6 +224,12 @@ namespace DataAccess.Migrations
                             Id = 3,
                             Description = "Fish are aquatic, craniate, gill-bearing animals that lack limbs with digits. Included in this definition are the living hagfish, lampreys, and cartilaginous and bony fish as well as various extinct related groups.",
                             Name = "Fish"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Rodents (from Latin rodere, 'to gnaw') are mammals of the order Rodentia (/roʊˈdɛnʃə/), which are characterized by a single pair of continuously growing incisors in each of the upper and lower jaws. About 40% of all mammal species are rodents.",
+                            Name = "Rodent"
                         });
                 });
 
