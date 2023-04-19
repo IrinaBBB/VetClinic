@@ -51,8 +51,8 @@ else
                     @foreach (var animal in Animals)
                     {
                         <tr>
-                            <td>@animal.Name</td>
-                            <td>@animal.Species.Name</td>
+                            <td>@animal?.Name</td>
+                            <td>@animal.Species?.Name</td>
                             <td>@animal.Sex</td>
                             <td>@animal.Neutered.ToString()</td>
                             <td>@animal.WeightInKilos</td>

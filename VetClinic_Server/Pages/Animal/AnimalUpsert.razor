@@ -1,13 +1,16 @@
 ﻿@page "/animals/create"
 @page "/animals/edit/{Id:int}"
 @using CatHotel.Server.Helpers
-
+@using VetClinic_Server.Service.IService
 
 @inject IAnimalRepository _animalRepository
 @inject ISpeciesRepository _speciesRepository
+@inject IAnimalImageRepository _imageRepository
+
 @inject ILogger _logger
 @inject NavigationManager _navigationManager
 @inject IJSRuntime _jsRuntime
+@inject IFileUpload _fileUpload
 
 <div class="row justify-content-start">
     <div class="col-xl-10 col-lg-10 col-md-9">
@@ -17,16 +20,17 @@
             </div>
             <div class="card-body">
                 <EditForm Model="AnimalModel" class="custom-form" OnValidSubmit="HandleAnimalUpsert">
+                    <DataAnnotationsValidator/>
                     <div class="row justify-content-start">
                         <div class="custom-form__group  col-8">
-                            <ValidationMessage For="() => AnimalModel.Name" />
-                            <InputText id="nameOfPet" placeholder="Name" class="custom-form__input" @bind-Value="AnimalModel.Name" />
+                            <ValidationMessage For="() => AnimalModel.Name"/>
+                            <InputText id="nameOfPet" placeholder="Name" class="custom-form__input" @bind-Value="AnimalModel.Name"/>
                             <label for="nameOfPet" class="custom-form__label">Name</label>
                         </div>
                         <div class="custom-form__group col-4 mt-1">
                             <div>
-                                <ValidationMessage For="() => AnimalModel.Name" />
-                                <InputDate id="dateOfBirth" placeholder="Date Of Birth" class="custom-form__input" @bind-Value="AnimalModel.DateOfBirth" />
+                                <ValidationMessage For="() => AnimalModel.DateOfBirth"/>
+                                <InputDate id="dateOfBirth" placeholder="Date Of Birth" class="custom-form__input" @bind-Value="AnimalModel.DateOfBirth"/>
                                 <label for="dateOfBirth" class="custom-form__label">Date of Birth</label>
                             </div>
 
@@ -35,8 +39,9 @@
                     <div class="row justify-content-start">
                         <div class="custom-form__group col-6">
                             <div class="custom-form__group">
-                                <ValidationMessage For="() => AnimalModel.Species" />
+                                <ValidationMessage For="() => AnimalModel.SpeciesId"/>
                                 <InputSelect id="species" class="custom-form__input" @bind-Value="AnimalModel.SpeciesId">
+                                    <option value="">Choose species</option>
                                     @foreach (var species in SpeciesList)
                                     {
                                         <option value="@species.Id">@species.Name</option>
@@ -47,7 +52,7 @@
                         </div>
                         <div class="custom-form__group col-3">
                             <div class="custom-form__group">
-                                <ValidationMessage For="() => AnimalModel.Sex" />
+                                <ValidationMessage For="() => AnimalModel.Sex"/>
                                 <InputSelect id="sex" class="custom-form__input" @bind-Value="AnimalModel.Sex">
                                     @foreach (var sex in Enum.GetValues(typeof(Sex)))
                                     {
@@ -59,7 +64,7 @@
                         </div>
                         <div class="custom-form__group col-3">
                             <div class="custom-form__group">
-                                <ValidationMessage For="() => AnimalModel.Neutered" />
+                                <ValidationMessage For="() => AnimalModel.Neutered"/>
                                 <InputSelect id="neutered" class="custom-form__input" @bind-Value="AnimalModel.Neutered">
                                     @foreach (var neutered in Enum.GetValues(typeof(Neutered)))
                                     {
@@ -73,7 +78,7 @@
                     <div class="row justify-content-start">
                         <div class="custom-form__group col-4">
                             <div class="custom-form__group">
-                                <ValidationMessage For="() => AnimalModel.Chipped" />
+                                <ValidationMessage For="() => AnimalModel.Chipped"/>
                                 <InputSelect id="chipped" class="custom-form__input" @bind-Value="AnimalModel.Chipped">
                                     @foreach (var chipped in Enum.GetValues(typeof(Chipped)))
                                     {
@@ -84,18 +89,47 @@
                             </div>
                         </div>
                         <div class="custom-form__group col-4">
-                            <ValidationMessage For="() => AnimalModel.WeightInKilos" />
-                            <InputNumber id="weight" placeholder="Weight in Kilos" class="custom-form__input" @bind-Value="AnimalModel.WeightInKilos" />
+                            <ValidationMessage For="() => AnimalModel.WeightInKilos"/>
+                            <InputNumber id="weight" placeholder="Weight in Kilos" class="custom-form__input" @bind-Value="AnimalModel.WeightInKilos"/>
                             <label for="weight" class="custom-form__label">Weight In Kilos</label>
                         </div>
                         <div class="custom-form__group col-4">
                             <div class="custom-form__group">
-                                <ValidationMessage For="() => AnimalModel.EscapeAttempts" />
-                                <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts" />
+                                <ValidationMessage For="() => AnimalModel.EscapeAttempts"/>
+                                <InputNumber id="escapeAttempts" placeholder="Escape Attempts" class="custom-form__input" @bind-Value="AnimalModel.EscapeAttempts"/>
                                 <label for="escapeAttempts" class="custom-form__label">Escape Attempts</label>
                             </div>
                         </div>
                     </div>
+                    <div class="row justify-content-start flex-column">
+                        <div class="custom-form__group col-6">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <InputFile OnChange="HandleImageUpload" multiple class="custom-file-input" id="uploadImage"/>
+                                    <label class="custom-file-label" for="uploadImage">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                        <label class="custom-form__label ml-4" for="uploadImage">Upload animal image</label>
+                    </div>
+                    <div class="row">
+                        @if (AnimalModel.ImageUrls != null && AnimalModel.ImageUrls.Count > 0)
+                        {
+                            var serial = 1;
+                            foreach (var animalImageUrl in AnimalModel.ImageUrls)
+                            {
+                                <div class="col-md-2 mt-3">
+                                    <div class="image__serial">@serial</div>
+                                    <img src="@animalImageUrl" alt="" style="width: 100%"/>
+                                    <button @onclick="() => DeleteImage(animalImageUrl)" type="button" class="btn btn-outline-danger btn-block mt-2">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                </div>
+                                serial++;
+                            }
+                        }
+                    </div>
+
                     <div class="d-sm-flex align-items-center justify-content-end my-2">
                         <a href="/animals" class="btn btn-secondary btn-icon-split mr-3">
                             <span class="icon text-white-50">
@@ -116,16 +150,24 @@
     </div>
 </div>
 
+
 @code {
+
+    public const string RegisterTitle = "Register a new patient";
+    public const string EditTitle = "Edit patient info";
+
 
     [Parameter]
     public int? Id { get; set; }
 
-    private string Title { get; set; } = "Register a new patient";
+    private string Title { get; set; } = RegisterTitle;
 
     private static AnimalDto AnimalModel { get; set; } = new AnimalDto();
-
     private static IEnumerable<SpeciesDto> SpeciesList { get; set; }
+
+    private AnimalImageDto AnimalImage { get; set; } = new();
+    private List<string> DeletedImageNames { get; set; } = new List<string>();
+    private bool IsImageUploadProcessStarted { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,6 +176,10 @@
         {
             Title = "Edit patient info";
             AnimalModel = await _animalRepository.GetAnimalAsync(Id.Value);
+            if (AnimalModel?.AnimalImages != null)
+            {
+                AnimalModel.ImageUrls = AnimalModel.AnimalImages.Select(u => u.AnimalImageUrl).ToList();
+            }
         }
         else
         {
@@ -141,18 +187,84 @@
         }
     }
 
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        IsImageUploadProcessStarted = true;
+        try
+        {
+            var images = new List<string>();
+            if (e.GetMultipleFiles().Count > 0)
+            {
+                foreach (var file in e.GetMultipleFiles())
+                {
+                    var fileInfo = new System.IO.FileInfo(file.Name);
+                    if (fileInfo.Extension.ToLower() == ".jpg" ||
+                        fileInfo.Extension.ToLower() == ".png" ||
+                        fileInfo.Extension.ToLower() == ".jpeg")
+                    {
+                        var uploadedImagePath = await _fileUpload.UploadFile(file);
+                        images.Add(uploadedImagePath);
+                    }
+                    else
+                    {
+                        await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
+                        return;
+                    }
+                }
+
+                if (images.Any())
+                {
+                    if (AnimalModel.ImageUrls != null && AnimalModel.ImageUrls.Any())
+                    {
+                        AnimalModel.ImageUrls.AddRange(images);
+                    }
+                    else
+                    {
+                        AnimalModel.ImageUrls = new List<string>();
+                        AnimalModel.ImageUrls.AddRange(images);
+                    }
+                }
+                else
+                {
+                    await _jsRuntime.ToastrError("Image uploading failed");
+                    return;
+                }
+            }
+            IsImageUploadProcessStarted = false;
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ToastrError(ex.Message);
+        }
+    }
+
     private async Task HandleAnimalUpsert()
     {
         try
         {
-            if (AnimalModel.Id != 0 && Title == "Edit patient info")
+            if (AnimalModel.Id != 0 && Title == EditTitle)
             {
                 var updateAnimalResult = await _animalRepository.UpdateAnimalAsync(AnimalModel.Id, AnimalModel);
-                await _jsRuntime.ToastrSuccess("Patient info updated successfully.");
+                if ((AnimalModel.ImageUrls != null && AnimalModel.ImageUrls.Any()) || (DeletedImageNames != null && DeletedImageNames.Any()))
+                {
+                    if (DeletedImageNames != null && DeletedImageNames.Any())
+                    {
+                        foreach (var deletedImageName in DeletedImageNames)
+                        {
+                            var imageName = deletedImageName.Replace($"{_navigationManager.BaseUri}AnimalImages/", "");
+
+                            var result = _fileUpload.DeleteFile(imageName);
+                            await _imageRepository.DeleteAnimalImageByImageUrlAsync(deletedImageName);
+                        }
+                    }
+                    await AddAnimalImage(updateAnimalResult);
+                }
+                await _jsRuntime.ToastrSuccess("Hotel room updated successfully.");
             }
             else
             {
                 var createdResult = await _animalRepository.CreateAnimalAsync(AnimalModel);
+                await AddAnimalImage(createdResult);
                 await _jsRuntime.ToastrSuccess("New patient created successfully.");
             }
         }
@@ -161,6 +273,46 @@
             _logger.LogError(ex.Message);
         }
         _navigationManager.NavigateTo("animals");
+    }
+
+    private async Task AddAnimalImage(AnimalDto animalDetails)
+    {
+        foreach (var imageUrl in AnimalModel.ImageUrls)
+        {
+            if (AnimalModel.AnimalImages == null || AnimalModel.AnimalImages.All(x => x.AnimalImageUrl != imageUrl))
+            {
+                AnimalImage = new AnimalImageDto()
+                {
+                    AnimalId = animalDetails.Id,
+                    AnimalImageUrl = imageUrl
+                };
+                await _imageRepository.CreateAnimalImageAsync(AnimalImage);
+            }
+        }
+    }
+
+    internal async Task DeleteImage(string imageUrl)
+    {
+        try
+        {
+            var imageIndex = AnimalModel.ImageUrls.FindIndex(x => x == imageUrl);
+            var imageName = imageUrl.Replace($"{_navigationManager.BaseUri}AnimalImages/", "");
+            if (AnimalModel.Id == 0 && Title == RegisterTitle)
+            {
+                var result = _fileUpload.DeleteFile(imageName);
+            }
+            else
+            {
+                //update
+                DeletedImageNames ??= new List<string>();
+                DeletedImageNames.Add(imageUrl);
+            }
+            AnimalModel.ImageUrls.RemoveAt(imageIndex);
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ToastrError(ex.Message);
+        }
     }
 
 }

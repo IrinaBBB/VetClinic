@@ -62,7 +62,9 @@ namespace Business.Repository
             try
             {
                 var animalDto = _mapper.Map<Animal, AnimalDto>(
-                    await _db.Animals.Include(x => x.Species)
+                    await _db.Animals
+                        .Include(x => x.Species)
+                        .Include(x => x.AnimalImages)
                         .FirstOrDefaultAsync(x => x.Id == animalId));
                 return animalDto;
             }
@@ -77,7 +79,9 @@ namespace Business.Repository
         public IEnumerable<AnimalDto> GetAllAnimals()
         {
             return _mapper.Map<IEnumerable<Animal>, IEnumerable<AnimalDto>>(
-                _db.Animals.Include(x => x.Species));
+                _db.Animals
+                    .Include(x => x.Species)
+                    .Include(x => x.AnimalImages));
         }
     }
 }

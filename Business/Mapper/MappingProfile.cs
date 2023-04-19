@@ -13,6 +13,11 @@ namespace Business.Mapper
 
             CreateMap<SpeciesDto, Species>();
             CreateMap<Species, SpeciesDto>();
+
+            CreateMap<AnimalImage, AnimalDto>().ReverseMap();
+
+            CreateMap<AnimalImage, AnimalImageDto>().ReverseMap();
+
         }
     }
 }

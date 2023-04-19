@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using Microsoft.Extensions.Logging;
+using VetClinic_Server.Service;
+using VetClinic_Server.Service.IService;
 
 namespace VetClinic_Server
 {
@@ -32,6 +34,8 @@ namespace VetClinic_Server
             services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("DefaultLogger"));
             services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<ISpeciesRepository, SpeciesRepository>();
+            services.AddScoped<IAnimalImageRepository, AnimalImageRepository>();
+            services.AddScoped<IFileUpload, FileUpload>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
         }

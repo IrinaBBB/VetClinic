@@ -6,7 +6,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <NavMenu />
+        <NavMenu/>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -20,7 +20,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">          
+                <div class="container-fluid">
                     @Body
                 </div>
                 <!-- /.container -->
@@ -52,7 +52,7 @@
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -69,24 +69,32 @@
             </div>
         </div>
     </div>
-    </div>
+</div>
 
 
 @code {
+
     [Inject]
     protected IJSRuntime JsRuntime { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender) {
-            JsRuntime.InvokeVoidAsync("onBlazorReady");
-            JsRuntime.InvokeVoidAsync("startPieChart");
-            JsRuntime.InvokeVoidAsync("startAreaChart");
-            JsRuntime.InvokeVoidAsync("initDataTablesJQuery");
-            JsRuntime.InvokeVoidAsync("initDataTablesBootstrap");
-            JsRuntime.InvokeVoidAsync("startTable");
-        }
+        //if (firstRender)
+        //{
+        //    JsRuntime.InvokeVoidAsync("onBlazorReady");
+        //    JsRuntime.InvokeVoidAsync("startPieChart");
+        //    JsRuntime.InvokeVoidAsync("startAreaChart");
+        //    JsRuntime.InvokeVoidAsync("initDataTablesJQuery");
+        //    JsRuntime.InvokeVoidAsync("initDataTablesBootstrap");
+        //    JsRuntime.InvokeVoidAsync("startTable");
+        //}
+
+        JsRuntime.InvokeVoidAsync("onBlazorReady");
+        JsRuntime.InvokeVoidAsync("startPieChart");
+        JsRuntime.InvokeVoidAsync("startAreaChart");
+        JsRuntime.InvokeVoidAsync("initDataTablesJQuery");
+        JsRuntime.InvokeVoidAsync("initDataTablesBootstrap");
+        JsRuntime.InvokeVoidAsync("startTable");
+
     }
 }
-
-

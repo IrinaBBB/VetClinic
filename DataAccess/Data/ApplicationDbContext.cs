@@ -1,6 +1,5 @@
 ﻿using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace DataAccess.Data
 {
@@ -9,7 +8,7 @@ namespace DataAccess.Data
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Species> Species { get; set; }
-
+        public DbSet<AnimalImage> AnimalImages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             Seed.addData(modelBuilder);

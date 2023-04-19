@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -39,6 +40,7 @@ namespace DataAccess.Entities
         public string UpdatedBy { get; set; }
         public int? SpeciesId { get; set; }
         public Species Species { get; set; }
+        public virtual ICollection<AnimalImage> AnimalImages { get; set; }
     }
 }
 
