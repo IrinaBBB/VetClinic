@@ -4,14 +4,16 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230727094932_AddVisit")]
+    partial class AddVisit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,21 +208,6 @@ namespace DataAccess.Migrations
                     b.ToTable("Visits");
                 });
 
-            modelBuilder.Entity("SpeciesVet", b =>
-                {
-                    b.Property<int>("SpecializationsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VetsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("SpecializationsId", "VetsId");
-
-                    b.HasIndex("VetsId");
-
-                    b.ToTable("SpeciesVet");
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>
                 {
                     b.HasOne("DataAccess.Entities.Owner", "Owner")
@@ -268,21 +255,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Animal");
 
                     b.Navigation("Vet");
-                });
-
-            modelBuilder.Entity("SpeciesVet", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Species", null)
-                        .WithMany()
-                        .HasForeignKey("SpecializationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Vet", null)
-                        .WithMany()
-                        .HasForeignKey("VetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>

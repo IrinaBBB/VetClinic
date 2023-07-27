@@ -4,14 +4,16 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230727084727_InitialMigrations")]
+    partial class InitialMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,14 +122,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -153,72 +151,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Species");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Vet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateOfGraduation")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vets");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Visit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AnimalId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Details")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VetId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("VisitDateTime")
-                        .HasColumnType("datetime");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("VetId");
-
-                    b.ToTable("Visits");
-                });
-
-            modelBuilder.Entity("SpeciesVet", b =>
-                {
-                    b.Property<int>("SpecializationsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VetsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("SpecializationsId", "VetsId");
-
-                    b.HasIndex("VetsId");
-
-                    b.ToTable("SpeciesVet");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>
@@ -251,45 +183,9 @@ namespace DataAccess.Migrations
                     b.Navigation("Animal");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Visit", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Animal", "Animal")
-                        .WithMany("Visits")
-                        .HasForeignKey("AnimalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Vet", "Vet")
-                        .WithMany("Visits")
-                        .HasForeignKey("VetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Animal");
-
-                    b.Navigation("Vet");
-                });
-
-            modelBuilder.Entity("SpeciesVet", b =>
-                {
-                    b.HasOne("DataAccess.Entities.Species", null)
-                        .WithMany()
-                        .HasForeignKey("SpecializationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Entities.Vet", null)
-                        .WithMany()
-                        .HasForeignKey("VetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>
                 {
                     b.Navigation("AnimalImages");
-
-                    b.Navigation("Visits");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Owner", b =>
@@ -300,11 +196,6 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.Species", b =>
                 {
                     b.Navigation("Animals");
-                });
-
-            modelBuilder.Entity("DataAccess.Entities.Vet", b =>
-                {
-                    b.Navigation("Visits");
                 });
 #pragma warning restore 612, 618
         }
