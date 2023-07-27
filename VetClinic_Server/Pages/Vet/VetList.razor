@@ -1,0 +1,77 @@
+﻿@page "/vets"
+@inject ApplicationDbContext DbContext
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+	<h1 class="h3 mb-0 text-gray-800">Medical Personnel</h1>
+	<a href="#" class="btn btn-warning btn-icon-split">
+		<span class="icon text-white-50">
+			<i class="fas fa-plus"></i>
+		</span>
+		<span class="text">Add a new vet</span>
+	</a>
+</div>
+@if (Vets == null)
+{
+	<p>
+		<em>Loading...</em>
+	</p>
+}
+else
+{
+	<div class="card shadow mb-4">
+		<div class="card-body">
+			<div class="table-responsive">
+				<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+					<thead>
+					<tr>
+						<th>Name</th>
+						<th>Age</th>
+						<th>Date of Graduation</th>
+						<th>&nbsp;</th>
+					</tr>
+					</thead>
+					<tfoot>
+					<tr>
+						<th>Name</th>
+						<th>Age</th>
+						<th>Date of Graduation</th>
+						<th>&nbsp;</th>
+					</tr>
+					</tfoot>
+					<tbody>
+					@foreach (var vet in Vets)
+                    {
+						<tr>
+							<td>@vet.Name</td>
+							<td>@vet.Age years</td>
+                            <td>@vet.DateOfGraduation?.ToString("dd/MM/yyyy")</td>
+                            <th class="d-flex justify-content-around">
+                                <a href="@($"vets/details/{vet.Id}")" class="btn btn-warning btn-circle">
+                                    <i class="fas fa-info"></i>
+                                </a>
+                                <a href="@($"vets/edit/{vet.Id}")" class="btn btn-info btn-circle">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-danger btn-circle">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </th>
+						</tr>
+                    }
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+@code {
+	private IEnumerable<Vet> Vets { get; set; } = new List<Vet>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Vets = await DbContext.Vets.AsNoTracking().ToListAsync();
+	}
+
+}
+

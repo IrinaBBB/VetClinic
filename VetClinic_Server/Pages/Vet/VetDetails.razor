@@ -1,0 +1,15 @@
+﻿@page "/vets/details/{Id:int}"
+
+
+<div class="px-10 bg-slate-50 ">
+	<div class="shadow bg-white rounded p-10">
+		<h1 class="text-xl font-bold uppercase">Vet Details</h1>
+	</div>
+</div>
+
+@code {
+    
+	[Parameter]
+	public int? Id { get; set; }
+
+}
