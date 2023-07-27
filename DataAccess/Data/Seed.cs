@@ -166,6 +166,14 @@ namespace DataAccess.Data
                     OwnerId = 2
                 },
             });
+
+            modelBuilder.Entity<Visit>().HasData(new List<Visit>()
+            {
+                new() { Id = 1, AnimalId = 1, VetId = 1, VisitDateTime = DateTime.Parse("2023.01.13T13:45:00")},
+                new() { Id = 2, AnimalId = 2, VetId = 1, VisitDateTime = DateTime.Parse("2023.07.11T11:15:00")},
+                new() { Id = 3, AnimalId = 3, VetId = 1, VisitDateTime = DateTime.Parse("2023.06.12T11:13:10")},
+                new() { Id = 4, AnimalId = 4, VetId = 2, VisitDateTime = DateTime.Parse("2023.06.14T11:10:00")},
+            });
         }
     }
 }
