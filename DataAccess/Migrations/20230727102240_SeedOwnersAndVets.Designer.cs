@@ -4,14 +4,16 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230727102240_SeedOwnersAndVets")]
+    partial class SeedOwnersAndVets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,124 +87,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("SpeciesId");
 
                     b.ToTable("Animals");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Chipped = 0,
-                            CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 857, DateTimeKind.Utc).AddTicks(5735),
-                            EscapeAttempts = 0,
-                            Name = "Lad",
-                            Neutered = 0,
-                            OwnerId = 1,
-                            Sex = 1,
-                            SpeciesId = 2,
-                            WeightInKilos = 3m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Chipped = 1,
-                            CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 857, DateTimeKind.Local).AddTicks(9227),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 857, DateTimeKind.Utc).AddTicks(9206),
-                            EscapeAttempts = 0,
-                            Name = "Inka",
-                            Neutered = 1,
-                            OwnerId = 1,
-                            Sex = 2,
-                            SpeciesId = 2,
-                            WeightInKilos = 2m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Chipped = 0,
-                            CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4781),
-                            EscapeAttempts = 0,
-                            Name = "Dundy",
-                            Neutered = 0,
-                            OwnerId = 1,
-                            Sex = 0,
-                            SpeciesId = 4,
-                            WeightInKilos = 0m
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Chipped = 0,
-                            CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4797),
-                            EscapeAttempts = 0,
-                            Name = "Urshy",
-                            Neutered = 0,
-                            OwnerId = 2,
-                            Sex = 1,
-                            SpeciesId = 2,
-                            WeightInKilos = 5m
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Chipped = 2,
-                            CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4802),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4800),
-                            EscapeAttempts = 6,
-                            Name = "Sebastian",
-                            Neutered = 2,
-                            OwnerId = 2,
-                            Sex = 1,
-                            SpeciesId = 3,
-                            WeightInKilos = 9m
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Chipped = 2,
-                            CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4870),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4868),
-                            EscapeAttempts = 0,
-                            Name = "Jessie",
-                            Neutered = 1,
-                            OwnerId = 2,
-                            Sex = 2,
-                            SpeciesId = 2,
-                            WeightInKilos = 2m
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Chipped = 1,
-                            CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4883),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4882),
-                            EscapeAttempts = 3,
-                            Name = "Quiffy",
-                            Neutered = 1,
-                            OwnerId = 2,
-                            Sex = 2,
-                            SpeciesId = 3,
-                            WeightInKilos = 3m
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Chipped = 2,
-                            CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4890),
-                            EscapeAttempts = 0,
-                            Name = "Woffy",
-                            Neutered = 1,
-                            OwnerId = 2,
-                            Sex = 1,
-                            SpeciesId = 3,
-                            WeightInKilos = 4m
-                        });
                 });
 
             modelBuilder.Entity("DataAccess.Entities.AnimalImage", b =>
@@ -287,37 +171,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Species");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Unknown"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Cat is a domestic species of small carnivorous mammal.",
-                            Name = "Cat"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Dog is is a domesticated descendant of the wolf. Also called the domestic dog, it is derived from the extinct Pleistocene wolf, and the modern wolf is the dog's nearest living relative.",
-                            Name = "Dog"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Fish are aquatic, craniate, gill-bearing animals that lack limbs with digits. Included in this definition are the living hagfish, lampreys, and cartilaginous and bony fish as well as various extinct related groups.",
-                            Name = "Fish"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Rodents (from Latin rodere, 'to gnaw') are mammals of the order Rodentia (/roʊˈdɛnʃə/), which are characterized by a single pair of continuously growing incisors in each of the upper and lower jaws. About 40% of all mammal species are rodents.",
-                            Name = "Rodent"
-                        });
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Vet", b =>
@@ -400,33 +253,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("VetsId");
 
                     b.ToTable("SpeciesVet");
-
-                    b.HasData(
-                        new
-                        {
-                            SpecializationsId = 1,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 2,
-                            VetsId = 2
-                        },
-                        new
-                        {
-                            SpecializationsId = 3,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 4,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 4,
-                            VetsId = 2
-                        });
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>

@@ -4,14 +4,16 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230727103311_SeedAnimalsAndSpecies")]
+    partial class SeedAnimalsAndSpecies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +94,7 @@ namespace DataAccess.Migrations
                             Id = 1,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 857, DateTimeKind.Utc).AddTicks(5735),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 893, DateTimeKind.Utc).AddTicks(7466),
                             EscapeAttempts = 0,
                             Name = "Lad",
                             Neutered = 0,
@@ -106,8 +108,8 @@ namespace DataAccess.Migrations
                             Id = 2,
                             Chipped = 1,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 857, DateTimeKind.Local).AddTicks(9227),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 857, DateTimeKind.Utc).AddTicks(9206),
+                            DateOfBirth = new DateTime(2023, 7, 27, 12, 33, 10, 894, DateTimeKind.Local).AddTicks(2353),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 894, DateTimeKind.Utc).AddTicks(2328),
                             EscapeAttempts = 0,
                             Name = "Inka",
                             Neutered = 1,
@@ -121,7 +123,7 @@ namespace DataAccess.Migrations
                             Id = 3,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4781),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5244),
                             EscapeAttempts = 0,
                             Name = "Dundy",
                             Neutered = 0,
@@ -135,7 +137,7 @@ namespace DataAccess.Migrations
                             Id = 4,
                             Chipped = 0,
                             CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4797),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5258),
                             EscapeAttempts = 0,
                             Name = "Urshy",
                             Neutered = 0,
@@ -149,8 +151,8 @@ namespace DataAccess.Migrations
                             Id = 5,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4802),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4800),
+                            DateOfBirth = new DateTime(2023, 7, 27, 12, 33, 10, 900, DateTimeKind.Local).AddTicks(5263),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5261),
                             EscapeAttempts = 6,
                             Name = "Sebastian",
                             Neutered = 2,
@@ -164,8 +166,8 @@ namespace DataAccess.Migrations
                             Id = 6,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4870),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4868),
+                            DateOfBirth = new DateTime(2023, 7, 27, 12, 33, 10, 900, DateTimeKind.Local).AddTicks(5321),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5319),
                             EscapeAttempts = 0,
                             Name = "Jessie",
                             Neutered = 1,
@@ -179,8 +181,8 @@ namespace DataAccess.Migrations
                             Id = 7,
                             Chipped = 1,
                             CreatedBy = "Anna Bergsson",
-                            DateOfBirth = new DateTime(2023, 7, 27, 12, 48, 39, 861, DateTimeKind.Local).AddTicks(4883),
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4882),
+                            DateOfBirth = new DateTime(2023, 7, 27, 12, 33, 10, 900, DateTimeKind.Local).AddTicks(5328),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5326),
                             EscapeAttempts = 3,
                             Name = "Quiffy",
                             Neutered = 1,
@@ -194,7 +196,7 @@ namespace DataAccess.Migrations
                             Id = 8,
                             Chipped = 2,
                             CreatedBy = "Anna Bergsson",
-                            DateRegistered = new DateTime(2023, 7, 27, 10, 48, 39, 861, DateTimeKind.Utc).AddTicks(4890),
+                            DateRegistered = new DateTime(2023, 7, 27, 10, 33, 10, 900, DateTimeKind.Utc).AddTicks(5332),
                             EscapeAttempts = 0,
                             Name = "Woffy",
                             Neutered = 1,
@@ -400,33 +402,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("VetsId");
 
                     b.ToTable("SpeciesVet");
-
-                    b.HasData(
-                        new
-                        {
-                            SpecializationsId = 1,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 2,
-                            VetsId = 2
-                        },
-                        new
-                        {
-                            SpecializationsId = 3,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 4,
-                            VetsId = 1
-                        },
-                        new
-                        {
-                            SpecializationsId = 4,
-                            VetsId = 2
-                        });
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Animal", b =>

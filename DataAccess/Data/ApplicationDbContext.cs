@@ -10,7 +10,7 @@ namespace DataAccess.Data
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Seed.AddData(modelBuilder);
+            Seed.AddData(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
