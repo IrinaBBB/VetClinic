@@ -1,7 +1,6 @@
 ﻿@page "/animals"
+@inject ApplicationDbContext DbContext
 
-
-@inject IAnimalRepository _animalRepository;
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
 	<h1 class="h3 mb-0 text-gray-800">Animals</h1>
@@ -20,7 +19,7 @@
 }
 else
 {
-	<div class="bg-white shadow-md rounded">
+	<div class="flex flex-col justify-between h-[480px]">
 		<table class="min-w-max w-full table-auto">
 			<thead>
 			<tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
@@ -44,7 +43,7 @@ else
 					</td>
 					<td class="py-3 px-6 text-lg">
 
-						@switch (animal.Species?.Name)
+						@switch (animal?.Species?.Name)
 						{
 							case "Cat":
 								<span class="bg-teal-200 text-teal-600 py-1 px-3 rounded-full text-xs">@animal.Species?.Name</span>
@@ -76,6 +75,7 @@ else
 								case Neutered.Yes:
 									<span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">@animal.Neutered.ToString()</span>
 									break;
+								case Neutered.Unknown:
 								default:
 									<span class="bg-slate-200 text-slate-600 py-1 px-3 rounded-full text-xs">@animal.Neutered.ToString()</span>
 									break;
@@ -89,13 +89,14 @@ else
 							@switch (animal.Chipped)
 							{
 								case Chipped.No:
-									<span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">@animal.Neutered.ToString()</span>
+									<span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">@animal.Chipped.ToString()</span>
 									break;
 								case Chipped.Yes:
-									<span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">@animal.Neutered.ToString()</span>
+									<span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">@animal.Chipped.ToString()</span>
 									break;
+								case Chipped.Unknown:
 								default:
-									<span class="bg-slate-200 text-slate-600 py-1 px-3 rounded-full text-xs">@animal.Neutered.ToString()</span>
+									<span class="bg-slate-200 text-slate-600 py-1 px-3 rounded-full text-xs">@animal.Chipped.ToString()</span>
 									break;
 							}
 
@@ -103,17 +104,17 @@ else
 					</td>
 					<td class="py-3 px-6 text-center">
 						<div class="flex item-center justify-center">
-							<div class="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 cursor-pointer">
+							<a href="@($"animals/details/{animal.Id}")" class="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 cursor-pointer">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
 								</svg>
-							</div>
-							<div class="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 cursor-pointer">
+							</a>
+							<a href="@($"animals/edit/{animal.Id}")" class="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 cursor-pointer">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
 								</svg>
-							</div>
+							</a>
 							<div class="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 cursor-pointer">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -125,67 +126,89 @@ else
 			}
 			</tbody>
 		</table>
+		<nav class="flex justify-end w-full mb-6">
+			<ul class="inline-flex items-center -space-x-px">
+				<li @onclick="@DecrementCurrentPage" class="cursor-pointer">
+					<a class="block py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+						<span class="sr-only">Previous</span>
+						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+						</svg>
+					</a>
+				</li>
+				@for (var i = 1; i <= _pageCount; i++)
+				{
+					var currentIndex = i;
+					if (currentIndex == _currentPage)
+					{
+						<li @onclick="@(() => UpdateCurrentPageAsync(currentIndex))" class="cursor-pointer">
+							<a aria-current="page" class="z-10 py-2 px-3 leading-tight text-slate bg-green-100 border border-green-300 hover:bg-blue-100 hover:text-blue-700">
+								@i
+							</a>
+						</li>
+					}
+					else
+					{
+						<li @onclick="@(() => UpdateCurrentPageAsync(currentIndex))" class="cursor-pointer">
+							<a class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+								@i
+							</a>
+						</li>
+					}
+				}
+				<li @onclick="IncrementCurrentPage" class="cursor-pointer">
+					<a class="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+						<span class="sr-only">Next</span>
+						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+						</svg>
+					</a>
+				</li>
+			</ul>
+		</nav>
 	</div>
-
-    @*<div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Species</th>
-                            <th>Sex</th>
-                            <th>Neutered</th>
-                            <th>Weight In Kilos</th>
-                            <th>Chipped</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Species</th>
-                            <th>Sex</th>
-                            <th>Neutered</th>
-                            <th>Weight In Kilos</th>
-                            <th>Chipped</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                        @foreach (var animal in Animals)
-                        {
-                            <tr>
-                                <td>@animal?.Name</td>
-                                <td>@animal.Species?.Name</td>
-                                <td>@animal.Sex</td>
-                                <td>@animal.Neutered.ToString()</td>
-                                <td>@animal.WeightInKilos</td>
-                                <td>@animal.Chipped</td>
-                                <th class="d-flex justify-content-around">
-                                    <a href="@($"animals/edit/{animal.Id}")" class="btn btn-info btn-circle">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-danger btn-circle">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </th>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>*@
 }
 
-@code {
-	private IEnumerable<AnimalDto> Animals { get; set; } = new List<AnimalDto>();
 
-	protected override void OnInitialized()
+@code {
+	private IEnumerable<Animal> Animals { get; set; } = new List<Animal>();
+	private int _pageCount = 0;
+	private int _currentPage = 1;
+		private const int PageSize = 5;
+
+	protected override async Task OnInitializedAsync()
 	{
-		Animals = _animalRepository.GetAllAnimals();
+		var animalsCount = DbContext.Animals.Count();
+		_pageCount = (animalsCount % PageSize == 0) ? animalsCount / PageSize : (animalsCount / PageSize) + 1;
+		Animals = await GetPaginatedListAsync();
+	}
+
+	private async Task<IEnumerable<Animal>> GetPaginatedListAsync()
+	{
+		return await DbContext.Animals.Include(a => a.Species).Skip((_currentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+	}
+
+	private async Task UpdateCurrentPageAsync(int i)
+	{
+		_currentPage = i;
+		Animals = await GetPaginatedListAsync();
+	}
+
+	private async Task IncrementCurrentPage()
+	{
+		if (_currentPage >= _pageCount) return;
+
+		_currentPage++;
+		Animals = await GetPaginatedListAsync();
+	}
+
+	private async Task DecrementCurrentPage()
+	{
+		if (_currentPage > 1)
+		{
+			_currentPage--;
+			Animals = await GetPaginatedListAsync();
+		}
 	}
 
 }
