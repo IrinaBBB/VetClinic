@@ -1,7 +1,6 @@
 ﻿@page "/animals"
 @inject ApplicationDbContext DbContext
 
-<!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
 	<h1 class="h3 mb-0 text-gray-800">Animals</h1>
 	<a href="/animals/create" class="btn btn-warning btn-icon-split">
@@ -210,5 +209,4 @@ else
 			Animals = await GetPaginatedListAsync();
 		}
 	}
-
 }

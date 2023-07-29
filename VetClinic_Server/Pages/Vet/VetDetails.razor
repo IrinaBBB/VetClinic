@@ -1,15 +1,47 @@
-﻿@page "/vets/details/{Id:int}"
+﻿@page "/vets/details/{VetId:int}"
+@inject ApplicationDbContext DbContext
+@inject NavigationManager Navigation
 
 
 <div class="px-10 bg-slate-50 ">
-	<div class="shadow bg-white rounded p-10">
-		<h1 class="text-xl font-bold uppercase">Vet Details</h1>
-	</div>
+    <div class="shadow bg-white rounded p-10">
+        <h1 class="text-xl font-bold uppercase">Vet Details</h1>
+        @*Important with '?'*@
+        <p>@Vet?.Name</p>
+        @for(var i = 0; i < Vet?.Specializations.Count; i++)
+        {
+            <div>@Vet?.Specializations.ElementAt(i).Name</div>
+        }
+        @for(var i = 0; i < Visits?.Count; i++)
+        {
+	        <div>@Visits?.ElementAt(i).Animal.Name</div>
+	        <div>@Visits?.ElementAt(i).VisitDateTime</div>
+        }
+    </div>
 </div>
 
 @code {
-    
-	[Parameter]
-	public int? Id { get; set; }
 
+    [Parameter]
+    public int? VetId { get; set; }
+
+    public Vet Vet { get; set; }
+    public ICollection<Visit> Visits { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Vet = await DbContext.Vets.FindAsync(VetId);
+        //if (Vet == null) { Navigation.NavigateTo("/notFound"); }
+        //Vet = await DbContext.Vets.FirstOrDefaultAsync(x => x.Id == VetId);
+        Vet = await DbContext.Vets
+            .Where(x => x.Id == VetId)
+            .Include(x => x.Specializations)
+            .FirstOrDefaultAsync();
+
+        Visits = await DbContext.Visits
+            .Where(x => x.VetId == VetId)
+            .Include(x => x.Animal)
+            .ToListAsync();
+    }
 }
