@@ -1,0 +1,53 @@
+﻿@page "/owners/details/{OwnerId:int}"
+@inject ApplicationDbContext DbContext
+
+<div class="px-10 bg-slate-50 mx-6">
+	<div class="shadow bg-white mx-4 rounded p-10">
+		<div class="flex items-center mb-7">
+			<img src="img/owner.svg" class="w-10 me-1" alt="vet icon"/>
+			<h1 class="text-xl font-bold uppercase text-slate-700">Owner Details</h1>
+		</div>
+		<div class="flex items-center mb-4">
+			<span class="text-xl font-bold uppercase text-lime-500 me-2">name:</span>
+			<span class="text-xl font-bold uppercase text-slate-700">@Owner?.Name</span>
+		</div>
+		<div class="flex items-center mb-4">
+			<span class="text-xl font-bold uppercase text-lime-500 me-2">age:</span>
+			<span class="text-xl font-bold text-slate-700">@Owner?.Age</span>
+		</div>
+		<div class="flex items-center mb-4">
+			<span class="text-xl font-bold uppercase text-lime-500 me-2">email:</span>
+			<span class="text-xl font-bold text-slate-700">@Owner?.Email</span>
+		</div>
+		@if (Owner?.Animals != null)
+		{
+			<div class="flex items-center mb-4">
+				<span class="text-xl font-bold uppercase text-lime-500 me-4">pets:</span>
+				@foreach (var animal in Owner?.Animals!)
+				{
+					<span class="bg-lime-500 text-lime-900 py-2 px-4 rounded-full cursor-pointer text-uppercase font-bold text-sm me-3">
+                        <NavLink href="@($"animals/details/{animal.Id}")">@animal.Name - @animal.Species?.Name</NavLink></span>
+				}
+			</div>
+		}
+	</div>
+</div>
+
+@code {
+
+	[Parameter]
+	public int? OwnerId { get; set; }
+
+	public Owner Owner { get; set; }
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Owner = await DbContext.Owners
+			.Where(x => x.Id == OwnerId)
+			.Include(x => x.Animals)
+			.ThenInclude(x => x.Species)
+			.FirstOrDefaultAsync();
+	}
+
+}
