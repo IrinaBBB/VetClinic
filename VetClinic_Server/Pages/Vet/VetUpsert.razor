@@ -1,4 +1,5 @@
 ﻿@page "/vets/create"
+@inject IConfiguration Config 
 
 <div class="row justify-content-start">
 	<div class="col-xl-10 col-lg-10 col-md-9">
@@ -7,58 +8,103 @@
 				<h4 class="m-0 font-weight-bold text-primary">Create a new vet</h4>
 			</div>
 			<div class="card-body">
-                <EditForm Model="Vet" class="custom-form" OnValidSubmit="() => { }">
-                    <DataAnnotationsValidator />
-                    <div class="custom-form__group">
-                        <ValidationMessage For="() => Vet.Name" />
-                        <InputText id="nameOfVet" placeholder="Name" class="custom-form__input" @bind-Value="Vet.Name" />
-                        <label for="nameOfVet" class="custom-form__label">Name</label>
-                    </div>
-                    <div class="custom-form__group">
-                        <div>
-                            <ValidationMessage For="() => Vet.DateOfGraduation" />
-                            <InputDate id="dateOfGraduation" placeholder="Date Of Birth" class="custom-form__input" @bind-Value="Vet.DateOfGraduation" />
-                            <label for="dateOfGraduation" class="custom-form__label">Date of Graduation</label>
-                        </div>
-                    </div>
-                    <div class="custom-form__group">
-                        <ValidationMessage For="() => Vet.Age" />
-                        <InputNumber id="age" placeholder="Name" class="custom-form__input" @bind-Value="Vet.Age" />
-                        <label for="age" class="custom-form__label">Age</label>
-                    </div>
-                    <div class="row justify-content-start flex-column">
-                        <div class="custom-form__group col-6">
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <InputFile OnChange="() => { }" multiple class="custom-file-input" id="uploadImage" />
-                                    <label class="custom-file-label" for="uploadImage">Choose file</label>
-                                </div>
-                            </div>
-                        </div>
-                        <label class="custom-form__label ml-4" for="uploadImage">Upload a new vet image</label>
-                    </div>
-                    <div class="d-sm-flex align-items-center justify-content-end my-2">
-                        <a href="/vets" class="btn btn-secondary btn-icon-split mr-3">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-arrow-left"></i>
-                            </span>
-                            <span class="text px-4">Cancel</span>
-                        </a>
-                        <button class="btn btn-primary btn-icon-split">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-check"></i>
-                            </span>
-                            <span class="text px-4">Save</span>
-                        </button>
-                    </div>
-                </EditForm>
+				<EditForm Model="Vet" class="custom-form" OnValidSubmit="() => { }">
+					<DataAnnotationsValidator/>
+					<div class="custom-form__group">
+						<ValidationMessage For="() => Vet.Name"/>
+						<InputText id="nameOfVet" placeholder="Name" class="custom-form__input" @bind-Value="Vet.Name"/>
+						<label for="nameOfVet" class="custom-form__label">Name</label>
+					</div>
+					<div class="custom-form__group">
+						<div>
+							<ValidationMessage For="() => Vet.DateOfGraduation"/>
+							<InputDate id="dateOfGraduation" placeholder="Date Of Birth" class="custom-form__input" @bind-Value="Vet.DateOfGraduation"/>
+							<label for="dateOfGraduation" class="custom-form__label">Date of Graduation</label>
+						</div>
+					</div>
+					<div class="custom-form__group">
+						<ValidationMessage For="() => Vet.Age"/>
+						<InputNumber id="age" placeholder="Name" class="custom-form__input" @bind-Value="Vet.Age"/>
+						<label for="age" class="custom-form__label">Age</label>
+					</div>
+					<div class="row justify-content-start flex-column">
+						<div class="custom-form__group col-6">
+							<div class="input-group">
+								<div class="custom-file">
+									<InputFile OnChange="LoadFiles" multiple class="custom-file-input" id="uploadImage"/>
+									<label class="custom-file-label" for="uploadImage">Choose file</label>
+								</div>
+							</div>
+						</div>
+						<label class="custom-form__label ml-4" for="uploadImage">Upload a new vet image</label>
+					</div>
+					<div class="d-sm-flex align-items-center justify-content-end my-2">
+						<a href="/vets" class="btn btn-secondary btn-icon-split mr-3">
+							<span class="icon text-white-50">
+								<i class="fas fa-arrow-left"></i>
+							</span>
+							<span class="text px-4">Cancel</span>
+						</a>
+						<button class="btn btn-primary btn-icon-split">
+							<span class="icon text-white-50">
+								<i class="fas fa-check"></i>
+							</span>
+							<span class="text px-4">Save</span>
+						</button>
+					</div>
+				</EditForm>
 			</div>
 		</div>
 	</div>
 </div>
 
+@if (_errors.Count > 0)
+{
+	<h2>Errors:</h2>
+	<ul class="text-danger">
+		@foreach (var error in _errors)
+		{
+			<li>@error</li>
+		}
+	</ul>
+}
+
 
 @code {
 	public Vet Vet { get; set; } = new Vet();
 
+	private readonly long _maxFileSize = 1024 * 1024 * 3; // Represents 3MB
+	private readonly int _maxAllowedFiles = 3;
+	private List<string> _errors = new();
+
+	private async Task LoadFiles(InputFileChangeEventArgs e)
+	{
+		_errors.Clear();
+
+		if (e.FileCount > _maxAllowedFiles)
+		{
+			_errors.Add($"Error: Attempting to upload {e.FileCount} files, but only {_maxAllowedFiles} files is allowed");
+			return;
+		}
+
+		foreach (var file in e.GetMultipleFiles(_maxAllowedFiles))
+		{
+			try
+			{
+				var newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(file.Name));
+				var path = Path.Combine(Config.GetValue<string>("FileStorage"), "user123", newFileName);
+
+				Directory.CreateDirectory(Path.Combine(Config.GetValue<string>("FileStorage"), "user123"));
+
+				await using FileStream fs = new(path, FileMode.Create);
+				await file.OpenReadStream(_maxFileSize).CopyToAsync(fs);
+			}
+			catch (Exception ex)
+			{
+				_errors.Add($"File: {file.Name} Error: {ex.Message}");
+			}
+		}
+	}
+
 }
+
