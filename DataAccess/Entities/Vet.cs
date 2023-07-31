@@ -8,6 +8,7 @@ namespace DataAccess.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
+        public string ImageFileName { get; set; }
         public DateTime? DateOfGraduation { get; set; }
         public ICollection<Visit> Visits { get; set; }
         public ICollection<Species> Specializations { get; set; }
