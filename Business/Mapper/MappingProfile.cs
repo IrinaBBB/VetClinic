@@ -17,7 +17,6 @@ namespace Business.Mapper
             CreateMap<AnimalImage, AnimalDto>().ReverseMap();
 
             CreateMap<AnimalImage, AnimalImageDto>().ReverseMap();
-
         }
     }
 }

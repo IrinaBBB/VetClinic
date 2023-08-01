@@ -1,5 +1,6 @@
 ﻿@page "/vets/create"
 @inject IConfiguration Config 
+@inject ApplicationDbContext DbContext
 
 <div class="row justify-content-start">
 	<div class="col-xl-10 col-lg-10 col-md-9">
@@ -8,7 +9,7 @@
 				<h4 class="m-0 font-weight-bold text-primary">Create a new vet</h4>
 			</div>
 			<div class="card-body">
-				<EditForm Model="Vet" class="custom-form" OnValidSubmit="() => { }">
+				<EditForm Model="Vet" class="custom-form" OnValidSubmit="SubmitForm">
 					<DataAnnotationsValidator/>
 					<div class="custom-form__group">
 						<ValidationMessage For="() => Vet.Name"/>
@@ -31,8 +32,8 @@
 						<div class="custom-form__group col-6">
 							<div class="input-group">
 								<div class="custom-file">
-									<InputFile OnChange="LoadFiles" multiple class="custom-file-input" id="uploadImage"/>
-									<label class="custom-file-label" for="uploadImage">Choose file</label>
+									<InputFile OnChange="LoadFiles" class="custom-file-input" id="uploadImage" accept=".png,.jpg,.jpeg"/>
+									<label class="custom-file-label" for="uploadImage">Upload a profile picture</label>
 								</div>
 							</div>
 						</div>
@@ -73,38 +74,61 @@
 @code {
 	public Vet Vet { get; set; } = new Vet();
 
-	private readonly long _maxFileSize = 1024 * 1024 * 3; // Represents 3MB
-	private readonly int _maxAllowedFiles = 3;
-	private List<string> _errors = new();
+	private const long MaxFileSize = 1024 * 1024 * 3; // Represents 3MB
+	private readonly List<string> _errors = new();
+	private IBrowserFile _file;
 
-	private async Task LoadFiles(InputFileChangeEventArgs e)
+	private async Task SubmitForm()
 	{
-		_errors.Clear();
-
-		if (e.FileCount > _maxAllowedFiles)
+		try
 		{
-			_errors.Add($"Error: Attempting to upload {e.FileCount} files, but only {_maxAllowedFiles} files is allowed");
-			return;
+			var relativePath = await CaptureFile();
+			Vet.ImageFileName = relativePath;
+
+			await DbContext.Vets.AddAsync(Vet);
+			await DbContext.SaveChangesAsync();
+
+			Vet = new Vet();
+			_file = null;
+			_errors.Clear();
+		}
+		catch (Exception ex)
+		{
+			_errors.Add($"Error: {ex.Message}");
+		}
+	}
+
+	private void LoadFiles(InputFileChangeEventArgs e)
+	{
+		_file = e.File;
+	}
+
+	private async Task<string> CaptureFile()
+	{
+		if (_file is null)
+		{
+			return "";
 		}
 
-		foreach (var file in e.GetMultipleFiles(_maxAllowedFiles))
+		try
 		{
-			try
-			{
-				var newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(file.Name));
-				var path = Path.Combine(Config.GetValue<string>("FileStorage"), "user123", newFileName);
+			var newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(_file.Name));
+			var path = Path.Combine(Config.GetValue<string>("FileStorage"), $"user_123", newFileName);
 
-				Directory.CreateDirectory(Path.Combine(Config.GetValue<string>("FileStorage"), "user123"));
+			var relativePath = Path.Combine($"user_123", newFileName);
 
-				await using FileStream fs = new(path, FileMode.Create);
-				await file.OpenReadStream(_maxFileSize).CopyToAsync(fs);
-			}
-			catch (Exception ex)
-			{
-				_errors.Add($"File: {file.Name} Error: {ex.Message}");
-			}
+			Directory.CreateDirectory(Path.Combine(Config.GetValue<string>("FileStorage"), $"user_123"));
+
+			await using FileStream fs = new(path, FileMode.Create);
+			await _file.OpenReadStream(MaxFileSize).CopyToAsync(fs);
+
+			return relativePath;
+		}
+		catch (Exception ex)
+		{
+			_errors.Add($"File: {_file.Name} Error: {ex.Message}");
+			throw;
 		}
 	}
 
 }
-
