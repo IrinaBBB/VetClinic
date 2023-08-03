@@ -1,4 +1,5 @@
-﻿<!-- Sidebar -->
+﻿@inject VetClinic_Server.Service.TokenProvider TokenProvider
+<!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand  d-flex align-items-center justify-content-center" href="">
@@ -56,10 +57,13 @@
 
     <!-- Nav Item - Login -->
     <li class="nav-item">
-	    <NavLink class="nav-link" href="Auth/Logout">
-		    <i class="fas fa-fw fa-lock"></i>
-		    <span>Logout</span>
-	    </NavLink>
+        <form action="Auth/Logout" method="post">
+	        <button class="nav-link" type="submit">
+		        <i class="fas fa-fw fa-lock"></i>
+		        <span>Logout</span>
+	        </button>
+            <input type="hidden" name="__RequestVerificationToken" value="@TokenProvider.XsrfToken"/>
+        </form>
     </li>
 
     <!-- Divider -->

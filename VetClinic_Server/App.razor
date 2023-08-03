@@ -1,11 +1,24 @@
-﻿@using VetClinic_Server.Pages
+﻿@using VetClinic_Server.Service
+@inject TokenProvider TokenProvider
+
+@code {
+    [Parameter]
+    public InitialApplicationState InitialState { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        TokenProvider.XsrfToken = InitialState.XsrfToken;
+		return base.OnInitializedAsync();
+    }
+}
+
 <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    </Found>
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <PageNotFound/>
-        </LayoutView>
-    </NotFound>
+	<Found Context="routeData">
+		<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+	</Found>
+	<NotFound>
+		<LayoutView Layout="@typeof(MainLayout)">
+			<PageNotFound/>
+		</LayoutView>
+	</NotFound>
 </Router>
