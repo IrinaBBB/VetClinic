@@ -1,98 +1,100 @@
 ﻿@inject VetClinic_Server.Service.TokenProvider TokenProvider
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-    <!-- Sidebar - Brand -->
-    <a class="sidebar-brand  d-flex align-items-center justify-content-center" href="">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <img src="img/pet.svg" width="50">
-        </div>
-        <div class="sidebar-brand-text mx-3">Vet Clinic</div>
-    </a>
+	<!-- Sidebar - Brand -->
+	<a class="sidebar-brand  d-flex align-items-center justify-content-center" href="">
+		<div class="sidebar-brand-icon rotate-n-15">
+			<img src="img/pet.svg" width="50">
+		</div>
+		<div class="sidebar-brand-text mx-3">Vet Clinic</div>
+	</a>
 
-    <!-- Divider -->
-    <hr class="sidebar-divider my-0">
+	<!-- Divider -->
+	<hr class="sidebar-divider my-0">
+	<AuthorizeView>
+        <Authorized>
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </NavLink>
+            </li>
 
-    <!-- Nav Item - Dashboard -->
-    <li class="nav-item">
-        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-        </NavLink>
-    </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
 
-    <!-- Divider -->
-    <hr class="sidebar-divider">
+            <!-- Nav Item - Animals -->
+            <li class="nav-item">
+                <NavLink class="nav-link" href="animals">
+                    <i class="fas fa-fw fa-paw"></i>
+                    <span>Animals</span>
+                </NavLink>
+            </li>
 
-    <!-- Nav Item - Animals -->
-    <li class="nav-item">
-        <NavLink class="nav-link" href="animals">
-            <i class="fas fa-fw fa-paw"></i>
-            <span>Animals</span>
-        </NavLink>
-    </li>
+            <!-- Nav Item - Owners -->
+            <li class="nav-item">
+                <NavLink class="nav-link" href="owners">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Owners</span>
+                </NavLink>
+            </li>
 
-    <!-- Nav Item - Owners -->
-    <li class="nav-item">
-        <NavLink class="nav-link" href="owners">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Owners</span>
-        </NavLink>
-    </li>
+            <!-- Nav Item - Medical Personel -->
+            <li class="nav-item">
+                <NavLink class="nav-link" href="vets">
+                    <i class="fas fa-fw fa-briefcase-medical"></i>
+                    <span>Medical Personnel</span>
+                </NavLink>
+            </li>
 
-    <!-- Nav Item - Medical Personel -->
-     <li class="nav-item">
-        <NavLink class="nav-link" href="vets">
-            <i class="fas fa-fw fa-briefcase-medical"></i>
-            <span>Medical Personnel</span>
-        </NavLink>
-    </li>
+            <!-- Nav Item - Logout -->
+            <li class="nav-item">
+                <form action="Auth/Logout" method="post">
+                    <button class="nav-link" type="submit">
+                        <i class="fas fa-fw fa-lock"></i>
+                        <span>Logout</span>
+                    </button>
+                    <input type="hidden" name="__RequestVerificationToken" value="@TokenProvider.XsrfToken" />
+                </form>
+            </li>
+        </Authorized>
+		<NotAuthorized>
+			<!-- Nav Item - Login -->
+			<li class="nav-item">
+				<NavLink class="nav-link" href="Auth/Login">
+					<i class="fas fa-fw fa-lock-open"></i>
+					<span>Login</span>
+				</NavLink>
+			</li>
+		</NotAuthorized>
+	</AuthorizeView>
 
-    <!-- Nav Item - Login -->
-    <li class="nav-item">
-	    <NavLink class="nav-link" href="Auth/Login">
-		    <i class="fas fa-fw fa-lock-open"></i>
-		    <span>Login</span>
-	    </NavLink>
-    </li>
 
-    <!-- Nav Item - Login -->
-    <li class="nav-item">
-        <form action="Auth/Logout" method="post">
-	        <button class="nav-link" type="submit">
-		        <i class="fas fa-fw fa-lock"></i>
-		        <span>Logout</span>
-	        </button>
-            <input type="hidden" name="__RequestVerificationToken" value="@TokenProvider.XsrfToken"/>
-        </form>
-    </li>
+	<!-- Divider -->
+	<hr class="sidebar-divider d-none d-md-block">
 
-    <!-- Divider -->
-    <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div>
+	<!-- Sidebar Toggler (Sidebar) -->
+	<div class="text-center d-none d-md-inline">
+		<button class="rounded-circle border-0" id="sidebarToggle"></button>
+	</div>
 
 </ul>
 <!-- End of Sidebar -->
 
 
-
-
 @code {
 
-    [Inject]
-    NavigationManager NavigationManager { get; set; }
+	[Inject]
+	NavigationManager NavigationManager { get; set; }
 
-    protected override void OnInitialized() => NavigationManager.LocationChanged += (s, e) => StateHasChanged();
+	protected override void OnInitialized() => NavigationManager.LocationChanged += (s, e) => StateHasChanged();
 
-    bool IsActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix)
-    {
-        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).ToLower();
-        return navLinkMatch == NavLinkMatch.All ? relativePath == href.ToLower() : relativePath.StartsWith(href.ToLower());
-    }
+	bool IsActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix)
+	{
+		var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).ToLower();
+		return navLinkMatch == NavLinkMatch.All ? relativePath == href.ToLower() : relativePath.StartsWith(href.ToLower());
+	}
 
-    string GetActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix) => IsActive(href, navLinkMatch) ? "active" : "";
+	string GetActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix) => IsActive(href, navLinkMatch) ? "active" : "";
 }
-
