@@ -1,0 +1,18 @@
+﻿@page
+@model VetClinic_Server.Pages.Auth.LoginModel
+@{
+}
+
+<h1>Login</h1>
+
+<form method="post">
+	<div class="form-group">
+		<label asp-for="Email"></label>
+		<input asp-for="Email" type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email">
+	</div>
+	<div class="form-group">
+		<label asp-for="Password"></label>
+		<input asp-for="Password" class="form-control" placeholder="Password">
+	</div>
+	<button type="submit" class="btn btn-primary">Log in</button>
+</form>
