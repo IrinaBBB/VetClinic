@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using VetClinic.Data;
 using VetClinic.Models;
 
 namespace VetClinic.Controllers
@@ -8,15 +10,23 @@ namespace VetClinic.Controllers
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public DashboardController(ILogger<DashboardController> logger)
+        public DashboardController(AppDbContext dbContext, ILogger<DashboardController> logger)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Animals()
+        {
+            var animals = _dbContext.Animals.Include(s => s.Species).ToList();
+            return View(animals);
         }
 
         public IActionResult Privacy()

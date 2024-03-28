@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model List<Animal>
+
+<div class="container-fluid">
+    <h1 class="m-0 font-weight-bold text-primary">Animals</h1>
+    <div class="card">
+        <table class="table table-bordered mb-0" style="width: 100%;">
+            <thead>
+                <tr role="row">
+                    <th>Name</th>
+                    <th>Species</th>
+                    <th>Sex</th>
+                    <th>Weight In Kilos</th>
+                    <th>Neutered</th>
+                    <th>Chipped</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+				@foreach (var animal in Model)
+				{
+					<tr>
+						<td>
+							@animal?.Name
+						</td>
+						<td>
+							@animal.Species?.Name
+						</td>
+						<td>
+							@animal.Sex
+						</td>
+						<td>
+                            @if (@animal?.WeightInKilos == null)
+                            {
+                                <span>Unknown</span>
+                            } else
+                            {
+                                <span>@animal.WeightInKilos kg</span>
+                            }
+						</td>
+						<td>
+							@animal.Neutered.ToString()
+						</td>
+						<td>
+							@animal.Chipped.ToString()
+						</td>
+                        <td class="text-center">
+                            <a href="#" class="btn btn-info btn-circle me-2">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                            <a href="#" class="btn btn-warning btn-circle me-2">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="btn btn-danger btn-circle">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+					</tr>
+				}
+            </tbody>
+        </table>
+    </div>
+</div>
