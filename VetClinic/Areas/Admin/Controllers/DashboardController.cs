@@ -29,6 +29,16 @@ namespace VetClinic.Controllers
             return View(animals);
         }
 
+        public IActionResult Owners()
+        {
+            return View();
+        }
+
+        public IActionResult Vets()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

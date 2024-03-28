@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VetClinic.Entities;
 
 namespace VetClinic.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
+        public AppDbContext()
+        {
+            
+        }
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
