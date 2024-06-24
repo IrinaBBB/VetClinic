@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddDbContext<VetClinicDbContext>(
+builder.Services.AddDbContextFactory<VetClinicDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("VetClinicDb")));
 
 var app = builder.Build();
