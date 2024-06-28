@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using VetClinic_Server.Data.Models;
 
 namespace VetClinic_Server.Data
 {
-    public class VetClinicDbContext : DbContext
+    public class VetClinicDbContext : IdentityDbContext<AppUser>
     {
-        public VetClinicDbContext(DbContextOptions options) : base(options)
+        public VetClinicDbContext(DbContextOptions<VetClinicDbContext> options) : base(options)
         {
         }
 
