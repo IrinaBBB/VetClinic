@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model LogoutModel
 @{
     ViewData["Title"] = "Log out";
@@ -19,3 +19,20 @@
         }
     }
 </header>
+ *@
+
+@page
+@using Microsoft.AspNetCore.Identity
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<AppUser> SignInManager
+@functions {
+    public async Task<IActionResult> OnPost()
+    {
+        if (SignInManager.IsSignedIn(User))
+        {
+            await SignInManager.SignOutAsync();
+        }
+
+        return RedirectToPage("Login");
+    }
+}
