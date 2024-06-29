@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VetClinic_Server.Data;
 
@@ -11,9 +12,11 @@ using VetClinic_Server.Data;
 namespace VetClinic_Server.Data.Migrations
 {
     [DbContext(typeof(VetClinicDbContext))]
-    partial class VetClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240629101217_SeedRoles")]
+    partial class SeedRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,52 +342,6 @@ namespace VetClinic_Server.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("VetClinic_Server.Data.Models.Vet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Education")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
-
-                    b.ToTable("Vets");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -445,23 +402,6 @@ namespace VetClinic_Server.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Species");
-                });
-
-            modelBuilder.Entity("VetClinic_Server.Data.Models.Vet", b =>
-                {
-                    b.HasOne("VetClinic_Server.Data.Models.AppUser", "AppUser")
-                        .WithOne("Vet")
-                        .HasForeignKey("VetClinic_Server.Data.Models.Vet", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("VetClinic_Server.Data.Models.AppUser", b =>
-                {
-                    b.Navigation("Vet")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.Species", b =>

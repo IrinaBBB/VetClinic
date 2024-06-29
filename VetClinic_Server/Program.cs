@@ -15,6 +15,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 builder.Services.AddDbContextFactory<VetClinicDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("VetClinicDb")));
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VetClinicDbContext>();
 
 var app = builder.Build();
