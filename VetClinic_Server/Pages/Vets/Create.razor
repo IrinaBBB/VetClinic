@@ -2,40 +2,40 @@
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<AppUser> UserManager
-@* <div class="container mb-3 row">
+
+<div class="container mb-3 row">
     <div class="justify-content-center col-10">
         @if (SuccessMessage is not null)
         {
-
-            <div class="card bg-success text-white shadow col-10">
-                <div class="card-body">
-                    @SuccessMessage
+            <div class="row justify-content-center w-100">
+                <div class="col-xl-10">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @SuccessMessage
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         }
 
         @if (ErrorMessage is not null)
         {
-            <div class="card bg-danger text-white shadow">
-                <div class="card-body">
-                    @ErrorMessage
+            <div class="row justify-content-center w-100">
+                <div class="col-xl-10">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @ErrorMessage
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-
         }
 
     </div>
-</div> *@
-<div class="row justify-content-center w-100">
-    <div class="col-xl-10">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
 </div>
+
     
 
 <div class="row justify-content-center w-100">
@@ -109,9 +109,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 
 @code {

@@ -4,6 +4,7 @@ using VetClinic_Server.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using BlazorIdentityDemo.Areas.Identity;
+using VetClinic_Server.Data.DbInitializer;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,5 +52,18 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<VetClinicDbContext>();
+var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+try
+{
+    context.Database.Migrate();
+    await DbInitializer.Initialize(context, userManager);
+} catch (Exception ex)
+{
+    logger.LogError(ex, "A problem occurred during migration");
+}
 
 app.Run();
