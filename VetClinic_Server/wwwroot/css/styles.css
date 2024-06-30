@@ -67,18 +67,19 @@ body {
 
 #vets .card {
   transition: transform 0.3s ease-out;
+  min-height: 470px;
 }
 #vets .card img {
   margin-top: -50px;
 }
     #vets .card:hover {
-        background-color: rgba(47, 196, 5, 0.85);
-        color: white;
+        /*background-color: rgba(47, 196, 5, 0.8);*/
+        /*color: white;*/
         transform: translateY(-1rem) scale(1.03);
     }
-#vets .card:hover i.fab {
+/*#vets .card:hover i.fab {
   color: #fff;
-}
+}*/
 #vets .card:hover h5.text-muted {
   color: #333 !important;
 }
