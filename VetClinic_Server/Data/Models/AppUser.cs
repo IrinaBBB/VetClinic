@@ -4,6 +4,6 @@ namespace VetClinic_Server.Data.Models
 {
     public class AppUser : IdentityUser
     {
-        public Vet Vet { get; set; }
+        public Vet Vet { get; set; } = new Vet();
     }
 }

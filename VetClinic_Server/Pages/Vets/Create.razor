@@ -1,0 +1,167 @@
+﻿@page "/vets/create"
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+@* <div class="container mb-3 row">
+    <div class="justify-content-center col-10">
+        @if (SuccessMessage is not null)
+        {
+
+            <div class="card bg-success text-white shadow col-10">
+                <div class="card-body">
+                    @SuccessMessage
+                </div>
+            </div>
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    @ErrorMessage
+                </div>
+            </div>
+
+        }
+
+    </div>
+</div> *@
+<div class="row justify-content-center w-100">
+    <div class="col-xl-10">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+    
+
+<div class="row justify-content-center w-100">
+     
+    <div class="col-xl-10">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h4 class="m-0 font-weight-bold text-primary">Create a new vet</h4>
+            </div>
+    
+            <div class="card-body">
+                @if (VetCreateViewModel is not null)
+                {
+                    <EditForm Model="VetCreateViewModel" OnValidSubmit="@HandleValidSubmitMethod">
+                        <DataAnnotationsValidator />
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.FirstName" />
+                                <InputText placeholder="Firstname" class="form-control" @bind-Value="VetCreateViewModel.FirstName" />
+                            </div>
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.LastName" />
+                                <InputText placeholder="Lastname" class="form-control" @bind-Value="VetCreateViewModel.LastName" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Password" />
+                                <InputText placeholder="Password" class="form-control" @bind-Value="VetCreateViewModel.Password" />
+                            </div>
+                            <div class="form-group col-6">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Email" />
+                                <InputText placeholder="Email" class="form-control" @bind-Value="VetCreateViewModel.Email" />
+                            </div>
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Phone" />
+                                <InputText placeholder="Phone Number" class="form-control" @bind-Value="VetCreateViewModel.Phone" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Specialization" />
+                                <InputTextArea @bind-Value="VetCreateViewModel.Specialization" placeholder="Specialization" class="form-control"></InputTextArea>
+                            </div>
+                            <div class="form-group col-6">
+                                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Education" />
+                                <InputTextArea @bind-Value="VetCreateViewModel.Education" placeholder="Education" class="form-control"></InputTextArea>
+                            </div>
+                        </div>
+                        <div class="d-sm-flex align-items-center justify-content-end my-2">
+                            <a href="/vets" class="btn btn-secondary btn-icon-split mr-3">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                                <span class="text px-4">Back</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <span class="text px-4">Save</span>
+                            </button>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    public VetCreateViewModel? VetCreateViewModel { get; set; }
+    private string? SuccessMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        VetCreateViewModel = new VetCreateViewModel();
+    }
+
+    private async Task HandleValidSubmitMethod()
+    {
+        try
+        {
+            var user = new AppUser
+                {
+                    Email = VetCreateViewModel?.Email,
+                    UserName = VetCreateViewModel?.Email,
+                    Vet = new Vet
+                    {
+                        FirstName = VetCreateViewModel?.FirstName,
+                        LastName = VetCreateViewModel?.LastName,
+                        Email = VetCreateViewModel?.Email,
+                        Phone = VetCreateViewModel?.Phone,
+                        Specialization = VetCreateViewModel?.Specialization,
+                        Education = VetCreateViewModel?.Education
+                    }
+                };
+
+
+            if (VetCreateViewModel?.Password is not null)
+            {
+                var result = await UserManager.CreateAsync(user, VetCreateViewModel?.Password);
+                if (result.Succeeded)
+                {
+                    //add this to add role to user
+
+                    await UserManager.AddToRoleAsync(user, "Vet");
+                }
+
+                SuccessMessage = $"Vet {user.Vet.FirstName} {user.Vet.LastName} was added successfully";
+                ErrorMessage = null;
+                VetCreateViewModel = new VetCreateViewModel();
+            }
+        } catch(Exception ex)
+        {
+            SuccessMessage = null;
+            ErrorMessage = $"Errot while adding vet: {ex.Message}";
+        }
+    }
+}
