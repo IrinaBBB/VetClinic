@@ -13,9 +13,6 @@ namespace VetClinic_Server.Data.Models
         public string? LastName { get; set; }
 
         [Required]
-        public string? Specialization { get; set; }
-
-        [Required]
         public string? Email { get; set; }
 
         [Required]
@@ -24,6 +21,15 @@ namespace VetClinic_Server.Data.Models
         public string? Education { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public bool Available { get; set; }
+
+        public bool HasEmergencyCertification { get; set; }
+
+        [Required]
+        public int SpecializationId { get; set; }
+
+        public Specialization? Specialization { get; set; }
 
         [Required]
         public string? AppUserId { get; set; }

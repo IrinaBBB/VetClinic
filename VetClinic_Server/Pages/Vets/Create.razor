@@ -80,10 +80,10 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-6">
+                           @*  <div class="form-group col-6">
                                 <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Specialization" />
                                 <InputTextArea @bind-Value="VetCreateViewModel.Specialization" placeholder="Specialization" class="form-control"></InputTextArea>
-                            </div>
+                            </div> *@
                             <div class="form-group col-6">
                                 <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Education" />
                                 <InputTextArea @bind-Value="VetCreateViewModel.Education" placeholder="Education" class="form-control"></InputTextArea>
@@ -126,42 +126,42 @@
 
     private async Task HandleValidSubmitMethod()
     {
-        try
-        {
-            var user = new AppUser
-                {
-                    Email = VetCreateViewModel?.Email,
-                    UserName = VetCreateViewModel?.Email,
-                    Vet = new Vet
-                    {
-                        FirstName = VetCreateViewModel?.FirstName,
-                        LastName = VetCreateViewModel?.LastName,
-                        Email = VetCreateViewModel?.Email,
-                        Phone = VetCreateViewModel?.Phone,
-                        Specialization = VetCreateViewModel?.Specialization,
-                        Education = VetCreateViewModel?.Education
-                    }
-                };
+        // try
+        // {
+        //     var user = new AppUser
+        //         {
+        //             Email = VetCreateViewModel?.Email,
+        //             UserName = VetCreateViewModel?.Email,
+        //             Vet = new Vet
+        //             {
+        //                 FirstName = VetCreateViewModel?.FirstName,
+        //                 LastName = VetCreateViewModel?.LastName,
+        //                 Email = VetCreateViewModel?.Email,
+        //                 Phone = VetCreateViewModel?.Phone,
+        //                 //Specialization = VetCreateViewModel?.Specialization,
+        //                 Education = VetCreateViewModel?.Education
+        //             }
+        //         };
 
 
-            if (VetCreateViewModel?.Password is not null)
-            {
-                var result = await UserManager.CreateAsync(user, VetCreateViewModel?.Password);
-                if (result.Succeeded)
-                {
-                    //add this to add role to user
+        //     if (VetCreateViewModel?.Password is not null)
+        //     {
+        //         var result = await UserManager.CreateAsync(user, VetCreateViewModel?.Password);
+        //         if (result.Succeeded)
+        //         {
+        //             //add this to add role to user
 
-                    await UserManager.AddToRoleAsync(user, "Vet");
-                }
+        //             await UserManager.AddToRoleAsync(user, "Vet");
+        //         }
 
-                SuccessMessage = $"Vet {user.Vet.FirstName} {user.Vet.LastName} was added successfully";
-                ErrorMessage = null;
-                VetCreateViewModel = new VetCreateViewModel();
-            }
-        } catch(Exception ex)
-        {
-            SuccessMessage = null;
-            ErrorMessage = $"Errot while adding vet: {ex.Message}";
-        }
+        //         SuccessMessage = $"Vet {user.Vet.FirstName} {user.Vet.LastName} was added successfully";
+        //         ErrorMessage = null;
+        //         VetCreateViewModel = new VetCreateViewModel();
+        //     }
+        // } catch(Exception ex)
+        // {
+        //     SuccessMessage = null;
+        //     ErrorMessage = $"Error while adding vet: {ex.Message}";
+        // }
     }
 }

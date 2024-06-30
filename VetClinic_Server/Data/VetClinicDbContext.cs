@@ -14,7 +14,7 @@ namespace VetClinic_Server.Data
         public DbSet<Species> Species => Set<Species>();
         public DbSet<Pet> Pets => Set<Pet>();
         public DbSet<Vet> Vets => Set<Vet>();
-
+        public DbSet<Specialization> Specializations => Set<Specialization>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,6 +31,14 @@ namespace VetClinic_Server.Data
                 new Pet { Id = 1, Name = "Buddy", SpeciesId = 1, IsNeutered = true, Sex = Sex.Male },
                 new Pet { Id = 2, Name = "Mittens", SpeciesId = 2, IsNeutered = true, Sex = Sex.Female },
                 new Pet { Id = 3, Name = "Goldy", SpeciesId = 3, IsNeutered = false, Sex = Sex.Unknown }
+            );
+
+            // SEED SPECIALIZATIONS
+            modelBuilder.Entity<Specialization>().HasData(
+                new Specialization { Id = 1, Name = "Veterinary Surgery", Description = "Specializes in performing surgical procedures on animals, including orthopedic, soft tissue, and minimally invasive surgeries." },
+                new Specialization { Id = 2, Name = "Veterinary Dentistry", Description = "Specializes in dental care for animals, including oral surgery, cleanings, and treatments for dental diseases." },
+                new Specialization { Id = 3, Name = "Small Animal Medicine and Surgery", Description = "Focuses on the diagnosis and treatment of diseases and injuries in pets like dogs and cats." },
+                new Specialization { Id = 4, Name = "Exotic Animal Medicine", Description = "Focuses on the diagnosis and treatment of diseases and injuries in pets like dogs and cats." }
             );
 
             // SEED ROLES
