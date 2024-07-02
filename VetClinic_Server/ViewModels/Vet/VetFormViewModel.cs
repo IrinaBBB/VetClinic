@@ -3,7 +3,7 @@ using VetClinic_Server.Data.Models;
 
 namespace VetClinic_Server.ViewModels.Vet
 {
-    public class VetCreateViewModel
+    public class VetFormViewModel
     {
         [Required]
         public string? FirstName { get; set; }

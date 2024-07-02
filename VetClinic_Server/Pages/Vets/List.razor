@@ -1,0 +1,152 @@
+﻿@page "/vets/{currentPage:int?}"
+@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.Services
+
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject StateContainer StateContainer
+@inject UserManager<AppUser> UserManager
+@inject IJSRuntime JS
+
+
+<div class="d-flex justify-content-between col-12 mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Vets</h1>
+    <a href="/vets/create" class="btn btn-primary btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-plus"></i>
+        </span>
+        <span class="text">Add a new vet</span>
+    </a>
+</div>
+
+@if (VetList is null)
+{
+    <div class="col-12">Loading ...</div>
+} else
+{ 
+    <table class="table table-striped table-light col-12" style="min-height: 294px;">
+        <thead class="thead-dark">
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Specialization</th>
+                <th>Available</th>
+                <th>Emergency Certification</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vet in VetList)
+            {
+                <tr>
+                    <td>@vet.FirstName</td>
+                    <td>@vet.LastName</td>
+                    <td>@vet.Email</td>
+                    <td>@vet.Phone</td>
+                    <td>@vet.Specialization?.Name</td>
+                    <td>@(vet.Available ? "Yes" : "No")</td>
+                    <td>@(vet.HasEmergencyCertification ? "Yes" : "No")</td>
+                    <td class="text-center">
+                        <a href="/vets/info/@vet.Id" class="btn btn-secondary btn-circle mr-2">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        <a href="/vets/edit/@vet.Id" class="btn btn-secondary btn-circle mr-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn btn-secondary btn-circle" @onclick="() => HandleDelete(vet)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav aria-label="Pagintaion" class="w-100">
+        <ul class="pagination justify-content-end">
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="/vets/@(CurrentPage - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+                <li class="page-item @(CurrentPage == i ? "active" : "")">
+                    <a class="page-link" href="/vets/@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                <a class="page-link" href="/vets/@(CurrentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+}
+
+
+
+@code {
+    [Parameter]
+    public int? CurrentPage { get; set; }
+
+    private Vet[]? VetList { get; set; }
+    private int TotalPages { get; set; }
+
+    private const int ItemsPerPage = 5;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData() {
+        if (CurrentPage is null or < 1)
+        {
+            NavigationManager.NavigateTo("vets/1");
+            return;
+        }
+        using var context = ContextFactory.CreateDbContext();
+
+        var vetsCount = await context.Vets.CountAsync();
+        TotalPages = vetsCount == 0 ? 1 : (int)Math.Ceiling((double)vetsCount / ItemsPerPage);
+
+        var itemsToSkip = (CurrentPage.Value - 1) * ItemsPerPage;
+
+        if (CurrentPage > TotalPages)
+        {
+            NavigationManager.NavigateTo($"vets/{TotalPages}");
+            return;
+        }
+
+        StateContainer.VetListPage = CurrentPage.Value;
+
+        VetList = await context.Vets
+            .Include(v => v.Specialization)
+            .Skip(itemsToSkip)
+            .Take(ItemsPerPage)
+            .ToArrayAsync();
+    }
+
+    private async Task HandleDelete(Vet vet)
+    {
+        var isOk = await JS.InvokeAsync<bool>("confirm", $"Delete vet {vet.FirstName} {vet.LastName}?");
+        if (isOk)
+        {
+            try
+            {
+                var user = await UserManager.FindByIdAsync(vet?.AppUserId!);
+                var result = await UserManager.DeleteAsync(user!);
+                if (result.Succeeded)
+                {
+                    // user is deleted
+                }
+            } catch(DbUpdateConcurrencyException)
+            {
+                // If we get this exception, the employee was deleted of modified
+                // As we reload the data below, let's ignore this exception
+                await LoadData();
+            }
+
+            await LoadData();
+        }
+    }
+}

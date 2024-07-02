@@ -2,6 +2,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
+
 <PageTitle>Create a Vet</PageTitle>
 <div class="d-flex justify-content-between col-12 mb-3">
     <h1 class="h3 mb-0 text-gray-800">Pets</h1>
@@ -25,6 +26,7 @@
                 <th>Species</th>
                 <th>Neutered</th>
                 <th>Sex</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -35,6 +37,17 @@
                     <td>@pet.Species?.Name</td>
                     <td>@pet.IsNeutered</td>
                     <td>@pet.Sex</td>
+                    <td class="text-center">
+                        <a href="/pets/info/@pet.Id" class="btn btn-secondary btn-circle mr-2">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        <a href="/pets/edit/@pet.Id" class="btn btn-secondary btn-circle mr-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="/pets/delete/@pet.Id" class="btn btn-secondary btn-circle">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>

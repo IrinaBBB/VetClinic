@@ -1,24 +1,24 @@
-@if (VetCreateViewModel is not null)
+@if (VetFormViewModel is not null)
 {
-    <EditForm Model="VetCreateViewModel" OnValidSubmit="@HandleValidSubmitMethod" OnInvalidSubmit="@HandleInvalidSubmitMethod">
+    <EditForm Model="VetFormViewModel" OnValidSubmit="@HandleValidSubmitMethod" OnInvalidSubmit="@HandleInvalidSubmitMethod">
         <DataAnnotationsValidator />
         <div class="row">
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.FirstName" />
-                <InputText placeholder="Firstname" class="form-control" @bind-Value="VetCreateViewModel.FirstName" />
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.FirstName" />
+                <InputText placeholder="Firstname" class="form-control" @bind-Value="VetFormViewModel.FirstName" />
             </div>
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.LastName" />
-                <InputText placeholder="Lastname" class="form-control" @bind-Value="VetCreateViewModel.LastName" />
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.LastName" />
+                <InputText placeholder="Lastname" class="form-control" @bind-Value="VetFormViewModel.LastName" />
             </div>
         </div>
         <div class="row">
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Password" />
-                <InputText placeholder="Password" class="form-control" @bind-Value="VetCreateViewModel.Password" />
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.Password" />
+                <InputText placeholder="Password" class="form-control" disabled="@IsDisabled" @bind-Value="VetFormViewModel.Password" />
             </div>
             <div class="form-group col-6">
-                <InputSelect placeholder="Password" class="form-control" @bind-Value="VetCreateViewModel.SpecializationId">
+                <InputSelect placeholder="Password" class="form-control" @bind-Value="VetFormViewModel.SpecializationId">
                     @if (Specializations is not null)
                     {
                         @foreach (var specialization in Specializations)
@@ -31,46 +31,53 @@
         </div>
         <div class="row">
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Email" />
-                <InputText placeholder="Email" class="form-control" @bind-Value="VetCreateViewModel.Email" />
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.Email" />
+                <InputText placeholder="Email" class="form-control" @bind-Value="VetFormViewModel.Email" />
             </div>
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Phone" />
-                <InputText placeholder="Phone Number" class="form-control" @bind-Value="VetCreateViewModel.Phone" />
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.Phone" />
+                <InputText placeholder="Phone Number" class="form-control" @bind-Value="VetFormViewModel.Phone" />
             </div>
         </div>
         <div class="row">
             <div class="form-group col-6">
-                <ValidationMessage class="text-danger" For="() => VetCreateViewModel.Education" />
-                <InputTextArea @bind-Value="VetCreateViewModel.Education" placeholder="Education" class="form-control"></InputTextArea>
+                <ValidationMessage class="text-danger" For="() => VetFormViewModel.Education" />
+                <InputTextArea @bind-Value="VetFormViewModel.Education" placeholder="Education" class="form-control"></InputTextArea>
             </div>
         </div>
         <div class="row pl-4">
             <div class="custom-control custom-checkbox col-12">
-                <InputCheckbox class="custom-control-input" id="available" @bind-Value="VetCreateViewModel.Available" />
+                <InputCheckbox class="custom-control-input" id="available" @bind-Value="VetFormViewModel.Available" />
                 <label class="custom-control-label" for="available">
                     Available
                 </label>
             </div>
             <div class="custom-control custom-checkbox col-12">
-                <InputCheckbox class="custom-control-input" id="emergency" @bind-Value="VetCreateViewModel.HasEmergencyCertification" />
+                <InputCheckbox class="custom-control-input" id="emergency" @bind-Value="VetFormViewModel.HasEmergencyCertification" />
                 <label class="custom-control-label" for="emergency">
                     Has Emergency Certification
                 </label>
             </div>
         </div>
         <div class="d-sm-flex align-items-center justify-content-end my-2">
-            <a href="/vets" class="btn btn-secondary btn-icon-split mr-3">
+            <button @onclick="HandleCancel" class="btn btn-secondary btn-icon-split mr-3">
                 <span class="icon text-white-50">
                     <i class="fas fa-arrow-left"></i>
                 </span>
                 <span class="text px-4">Back</span>
-            </a>
+            </button>
             <button type="submit" class="btn btn-primary btn-icon-split" disabled="@IsBusy">
                 <span class="icon text-white-50">
                     <i class="fas fa-check"></i>
                 </span>
-                <span class="text px-4">Save</span>
+                @if(IsEdit)
+                {
+                    <span class="text px-4">Update</span>
+
+                } else
+                {
+                    <span class="text px-4">Add</span>
+                }
             </button>
         </div>
     </EditForm>
@@ -78,11 +85,18 @@
 
 @code {
     [Parameter]
-    public VetCreateViewModel? VetCreateViewModel { get; set; }
+    public VetFormViewModel? VetFormViewModel { get; set; }
     [Parameter]
     public Specialization[]? Specializations { get; set; }
     [Parameter]
+    public EventCallback OnCancel { get; set; }
+    [Parameter]
     public bool IsBusy { get; set; }
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    private bool IsDisabled => VetFormViewModel?.Password == "N/A";
+
 
     [Parameter]
     public EventCallback<bool> OnSubmit { get; set; }
@@ -100,6 +114,14 @@
         if (OnSubmit.HasDelegate)
         {
             await OnSubmit.InvokeAsync(false);
+        }
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
         }
     }
 }

@@ -40,7 +40,7 @@
                 <h4 class="m-0 font-weight-bold text-primary">Create a new vet</h4>
             </div>
             <div class="card-body">
-                <VetForm VetCreateViewModel="@VetCreateViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
+                <VetForm VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
 
 
 @code {
-    private VetCreateViewModel? VetCreateViewModel { get; set; }
+    private VetFormViewModel? VetFormViewModel { get; set; }
     private Specialization[]? Specializations { get; set; }
     private bool IsBusy { get; set; }
 
@@ -61,7 +61,7 @@
     {
         using var context = ContextFactory.CreateDbContext();
         Specializations = await context.Specializations.ToArrayAsync();
-        VetCreateViewModel = new()
+        VetFormViewModel = new()
             {
                 SpecializationId = Specializations.FirstOrDefault()?.Id
             };
@@ -88,26 +88,26 @@
         {
             var user = new AppUser
                 {
-                    Email = VetCreateViewModel?.Email,
-                    UserName = VetCreateViewModel?.Email,
+                    Email = VetFormViewModel?.Email,
+                    UserName = VetFormViewModel?.Email,
                     Vet = new Vet
                     {
-                        FirstName = VetCreateViewModel?.FirstName,
-                        LastName = VetCreateViewModel?.LastName,
-                        Email = VetCreateViewModel?.Email,
-                        Phone = VetCreateViewModel?.Phone,
-                        SpecializationId = VetCreateViewModel?.SpecializationId ?? 1,
-                        Education = VetCreateViewModel?.Education,
-                        Available = VetCreateViewModel?.Available ?? false,
-                        HasEmergencyCertification = VetCreateViewModel?.HasEmergencyCertification ?? false,
+                        FirstName = VetFormViewModel?.FirstName,
+                        LastName = VetFormViewModel?.LastName,
+                        Email = VetFormViewModel?.Email,
+                        Phone = VetFormViewModel?.Phone,
+                        SpecializationId = VetFormViewModel?.SpecializationId ?? 1,
+                        Education = VetFormViewModel?.Education,
+                        Available = VetFormViewModel?.Available ?? false,
+                        HasEmergencyCertification = VetFormViewModel?.HasEmergencyCertification ?? false,
                     }
                 };
 
 
-            if (VetCreateViewModel?.Password is not null)
+            if (VetFormViewModel?.Password is not null)
             {
 
-                var result = await UserManager.CreateAsync(user, VetCreateViewModel?.Password!);
+                var result = await UserManager.CreateAsync(user, VetFormViewModel?.Password!);
 
                 if (result.Succeeded)
                 {
@@ -116,7 +116,7 @@
 
                 SuccessMessage = $"Vet {user.Vet.FirstName} {user.Vet.LastName} was added successfully";
                 ErrorMessage = null;
-                VetCreateViewModel = new VetCreateViewModel();
+                VetFormViewModel = new VetFormViewModel();
 
             }
         } catch(Exception ex)

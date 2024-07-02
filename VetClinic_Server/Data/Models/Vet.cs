@@ -34,6 +34,8 @@ namespace VetClinic_Server.Data.Models
         [Required]
         public string? AppUserId { get; set; }
         public AppUser? AppUser { get; set; }
+
+        public byte[] Timestamp { get; set; }
     }
 }
 

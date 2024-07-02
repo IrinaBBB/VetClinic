@@ -1,0 +1,219 @@
+﻿@page "/vets/edit/{VetId:int}"
+@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.Services
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject UserManager<AppUser> UserManager
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+
+
+<PageTitle>Edit vet</PageTitle>
+<div class="row justify-content-center w-100">
+   
+@if (SuccessMessage is not null)
+{
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-10">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @SuccessMessage
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (ErrorMessage is not null)
+{
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-10">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @ErrorMessage
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+     
+    <div class="col-xl-10">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h4 class="m-0 font-weight-bold text-primary">Edit vet</h4>
+            </div>
+            <div class="card-body">
+                @if(Vet is null && !IsBusy)
+                {
+                    <div class="row justify-content-center w-100">
+                        <div class="col-xl-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                Vet with id '@VetId' does not exist
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-end my-2">
+                        <a href="/vets" class="btn btn-secondary btn-icon-split mr-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                            <span class="text px-4">Back</span>
+                        </a>
+                    </div>
+                } else
+                {
+                    <VetForm OnCancel="NaviagteToOverviewPage" IsEdit="true" VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public int? VetId { get; set; }
+    private Vet? Vet { get; set; }
+    private VetFormViewModel? VetFormViewModel { get; set; }
+    private Specialization[]? Specializations { get; set; }
+    private bool IsBusy { get; set; }
+
+
+    private string? SuccessMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync() 
+    {
+        IsBusy = true;
+
+        try
+        {
+            using var context = ContextFactory.CreateDbContext();
+
+            Specializations = await context.Specializations.AsNoTracking().ToArrayAsync();
+            Vet = await context
+                .Vets
+                .Include(v => v.AppUser)
+                .FirstOrDefaultAsync(u => u.Id == VetId);
+
+            VetFormViewModel = new()
+                {
+                    Email = Vet?.Email,
+                    FirstName = Vet?.FirstName,
+                    LastName = Vet?.LastName,
+                    Phone = Vet?.Phone,
+                    SpecializationId = Vet?.SpecializationId ?? 1,
+                    Education = Vet?.Education,
+                    Available = Vet?.Available ?? false,
+                    HasEmergencyCertification = Vet?.HasEmergencyCertification ?? false,
+                    Password = "N/A"
+                };
+        } 
+        catch(DbUpdateConcurrencyException ex)
+        {
+            ErrorMessage = $"The vet was modified by another user. Please reload this page.";   
+        }
+        catch(Exception ex)
+        {
+            SuccessMessage = null;
+            ErrorMessage = $"Error while adding vet: {ex.Message}";
+        } finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task HandleSubmit(bool isValid)
+    {
+        if (isValid)
+        {
+            await HandleValidSubmit();
+        } else
+        {
+            HandleInvalidSubmit();
+        }
+    }
+    private async Task HandleValidSubmit()
+    {
+        SuccessMessage = null; 
+        ErrorMessage = null;
+
+        if (IsBusy || Vet is null)
+        {
+            ErrorMessage = null;
+            return;
+        }
+
+        IsBusy = true;
+
+        try
+        {
+            Vet.FirstName = VetFormViewModel?.FirstName;
+            Vet.LastName = VetFormViewModel?.LastName;
+            Vet.Email = VetFormViewModel?.Email;
+            Vet.Phone = VetFormViewModel?.Phone;
+            Vet.SpecializationId = VetFormViewModel?.SpecializationId ?? 1;
+            Vet.Education = VetFormViewModel?.Education;
+            Vet.Available = VetFormViewModel?.Available ?? false;
+            Vet.HasEmergencyCertification = VetFormViewModel?.HasEmergencyCertification ?? false;
+            Vet.AppUser.Email = VetFormViewModel?.Email;
+            Vet.AppUser.NormalizedEmail = VetFormViewModel?.Email?.ToUpper();
+            Vet.AppUser.UserName = VetFormViewModel?.Email;
+            Vet.AppUser.NormalizedUserName = VetFormViewModel?.Email?.ToUpper();
+
+            using var context = ContextFactory.CreateDbContext();
+            var vet = context.Update(Vet);
+            await context.SaveChangesAsync();
+
+            SuccessMessage = $"Vet {Vet.FirstName} {Vet.LastName} was updated successfully";
+            ErrorMessage = null;
+
+            //NaviagteToOverviewPage();
+
+        } catch(Exception ex)
+        {
+            SuccessMessage = null;
+            ErrorMessage = $"Error while adding vet: {ex.Message}";
+        } finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        SuccessMessage = null;
+        ErrorMessage = null;
+    }
+
+    private void NaviagteToOverviewPage()
+    {
+        NavigationManager.NavigateTo($"/vets/{StateContainer.VetListPage}");
+    }
+
+
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     var user = await UserManager
+    //         .Users
+    //         .Include(u => u.Vet)
+    //         .FirstOrDefaultAsync(u => u.Id == VetId);
+
+    //     VetFormViewModel = new()
+    //         {
+    //             Email = user?.Email,
+    //             FirstName = user?.Vet?.FirstName,
+    //             LastName = user?.Vet?.LastName,
+    //             Phone = user?.Vet?.Phone,
+    //             SpecializationId = user?.Vet?.SpecializationId ?? 1,
+    //             Education = user?.Vet?.Education,
+    //             Available = user?.Vet?.Available ?? false,
+    //             HasEmergencyCertification = user?.Vet?.HasEmergencyCertification ?? false
+    //         };
+    // }
+}
+
+
+
+     
