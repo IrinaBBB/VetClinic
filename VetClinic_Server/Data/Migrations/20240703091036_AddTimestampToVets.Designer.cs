@@ -12,7 +12,7 @@ using VetClinic_Server.Data;
 namespace VetClinic_Server.Data.Migrations
 {
     [DbContext(typeof(VetClinicDbContext))]
-    [Migration("20240702072414_AddTimestampToVets")]
+    [Migration("20240703091036_AddTimestampToVets")]
     partial class AddTimestampToVets
     {
         /// <inheritdoc />
@@ -388,6 +388,41 @@ namespace VetClinic_Server.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("VetClinic_Server.Data.Models.TimeSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Finish")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetId");
+
+                    b.HasIndex("VetId");
+
+                    b.ToTable("TimeSlots");
+                });
+
             modelBuilder.Entity("VetClinic_Server.Data.Models.Vet", b =>
                 {
                     b.Property<int>("Id")
@@ -432,8 +467,9 @@ namespace VetClinic_Server.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Timestamp")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 
@@ -505,6 +541,23 @@ namespace VetClinic_Server.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Species");
+                });
+
+            modelBuilder.Entity("VetClinic_Server.Data.Models.TimeSlot", b =>
+                {
+                    b.HasOne("VetClinic_Server.Data.Models.Pet", "Pet")
+                        .WithMany()
+                        .HasForeignKey("PetId");
+
+                    b.HasOne("VetClinic_Server.Data.Models.Vet", "Vet")
+                        .WithMany()
+                        .HasForeignKey("VetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+
+                    b.Navigation("Vet");
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.Vet", b =>

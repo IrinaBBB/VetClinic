@@ -15,6 +15,7 @@ namespace VetClinic_Server.Data
         public DbSet<Pet> Pets => Set<Pet>();
         public DbSet<Vet> Vets => Set<Vet>();
         public DbSet<Specialization> Specializations => Set<Specialization>();
+        public DbSet<TimeSlot> TimeSlots => Set<TimeSlot>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

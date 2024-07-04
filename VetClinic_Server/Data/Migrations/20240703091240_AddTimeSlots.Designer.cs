@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VetClinic_Server.Data;
 
@@ -11,9 +12,11 @@ using VetClinic_Server.Data;
 namespace VetClinic_Server.Data.Migrations
 {
     [DbContext(typeof(VetClinicDbContext))]
-    partial class VetClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240703091240_AddTimeSlots")]
+    partial class AddTimeSlots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

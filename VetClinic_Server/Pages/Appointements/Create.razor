@@ -1,5 +1,254 @@
 ﻿@page "/appointments"
+@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.ViewModels.Appointments
 
-<h1>Appointmnts</h1>
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+@inject IJSRuntime JS
+
+<PageTitle>Create a Vet</PageTitle>
+<style>
+    .bg-available {
+        background: rgba(60, 179, 113, 0.2);
+    }
+
+    .bg-added {
+        background: rgba(255, 255, 0, 0.1);
+    }
+
+    .bg-booked {
+        background: rgba(0, 0, 255, 0.3);
+    }
+</style>
+<div class="container-fluid w-100">
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h4 class="m-0">Create Available Appointments</h4>
+                </div>
+                <div class="card-body">
+                    @* <InputDate class="form-control col-4" @bind-Value="AppointmentDate" ValueChanged="OnDateChanged" /> *@
+                    <InputDate class="form-control col-4" @bind-Value="AppointmentDate" />
+                    <div class="row mt-4">
+                        <table class="table table-bordered">
+                            <tbody class="text-center">
+                                @for (int i = 7; i <= 15; i++)
+                                {
+                                    <tr>
+                                        
+                                    @for(int j = 0; j <= 40; j = j + 20) 
+                                        {
+                                          
+                                            var hour = (i < 10) ? "0" + i.ToString() : i.ToString();
+                                            var minutes = (j == 0) ? "00" : j.ToString();
+                                            var timeKey = $"{hour}:{minutes}";
+
+                                            TimeSlots[$"{@i}:{@j}"] = new CurrentTimeSlot
+                                            {
+                                                Hour = i,
+                                                Minutes = j
+                                            };
+                                            var currentSlot = TimeSlots[$"{@i}:{@j}"];
+
+                                            if (AvailableTimeSlots.ContainsKey(timeKey))
+                                            {
+
+                                                <td class="bg-available">
+                                                    <EditForm OnSubmit="@(e => RemoveTimeSlot(e))" Model="currentSlot">
+                                                        <input type="hidden" value="@hour:@minutes" />
+                                                        <span>@hour:@minutes</span>
+                                                        <button type="submit"  class="btn btn-primary btn-icon-split btn-sm ml-3">
+                                                            <span class="text">Remove</span>
+                                                        </button>
+                                                    </EditForm>
+                                                </td>
+                                            } else if(BookedTimeSlots.ContainsKey(timeKey))
+                                            {
+                                                <td class="bg-booked">
+                                                    <EditForm OnSubmit="@(e => HandleBookedSlot(e))" Model="currentSlot">
+                                                        <input type="hidden" value="@hour:@minutes" />
+                                                        <span class="text-black-50">@hour:@minutes</span>
+                                                        <button type="submit" class="btn btn-info btn-icon-split btn-sm ml-3">
+                                                            <span class="text text-black-50">Booked</span>
+                                                        </button>
+                                                    </EditForm>
+                                                </td>
+                                            } else
+                                            {
+                                                <td class="bg-light">
+                                                    <EditForm OnSubmit="@(e => AddTimeSlot(e))" Model="currentSlot">
+                                                        <input type="hidden" value="@hour:@minutes" />
+                                                        <span>@hour:@minutes</span>
+                                                        <button type="submit" class="btn btn-secondary btn-icon-split btn-sm ml-3">
+                                                            <span class="text">Add</span>
+                                                        </button>
+                                                    </EditForm>
+                                                </td>
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
+
+@code {
+    private DateTime AppointmentDate { get; set; } 
+    private AuthenticationState? AuthenticationState { get; set; }
+    public Dictionary<string, CurrentTimeSlot> TimeSlots = new Dictionary<string, CurrentTimeSlot>();
+    public Dictionary<string, TimeSlot> AvailableTimeSlots = new Dictionary<string, TimeSlot>();
+    public Dictionary<string, TimeSlot> BookedTimeSlots = new Dictionary<string, TimeSlot>();
+    private int VetId { get; set; }
+    private AppUser? AppUser { get; set; } 
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Initialize();
+    }
+
+    private async Task Initialize()
+    {
+        AppointmentDate = DateTime.Now; 
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = @AuthenticationState?.User.Identity?.Name;
+        AppUser = await UserManager
+                        .Users
+                        .Include(u => u.Vet)
+                    .FirstOrDefaultAsync(u => u.Email == userEmail);
+        using var context = ContextFactory.CreateDbContext();
+        AvailableTimeSlots = await context.TimeSlots
+                .Where(s => s.PetId == null && s.VetId == AppUser!.Vet!.Id && s.Date == AppointmentDate.Date)
+                .ToDictionaryAsync(s => s.Start.ToString("HH:mm"), s => s);
+        BookedTimeSlots = await context.TimeSlots
+                  .Where(s => s.PetId != null && s.VetId == AppUser!.Vet!.Id && s.Date == AppointmentDate.Date)
+                  .ToDictionaryAsync(s => s.Start.ToString("HH:mm"), s => s);
+    }
+
+    private void OnDateChanged(ChangeEventArgs e)
+    {
+        Navigation.NavigateTo("/appointments", forceLoad: true);
+    }
+
+    private async Task AddTimeSlot(EditContext editContext)
+    {
+        var model = editContext.Model as CurrentTimeSlot;
+
+        var userEmail = @AuthenticationState?.User.Identity?.Name;
+
+        if (AppUser == null)
+        {
+            // Handle the case when the user is not found
+            throw new Exception("User not found");
+        }
+
+        if (AppUser.Vet == null)
+        {
+            // Handle the case when the user's Vet is not found
+            throw new Exception("User's Vet not found");
+        }
+
+        int? hour = model?.Hour;
+        int? minutes = model?.Minutes;
+
+        if (!hour.HasValue || hour < 0 || hour > 23)
+        {
+            throw new ArgumentOutOfRangeException("Hour must be between 0 and 23.");
+        }
+        if (!minutes.HasValue || minutes < 0 || minutes > 59)
+        {
+            throw new ArgumentOutOfRangeException("Minute must be between 0 and 59.");
+        }
+
+        var timeSlot = new TimeSlot
+        {
+                Date = AppointmentDate.Date,
+                Start = new DateTime(
+                    AppointmentDate.Date.Year, AppointmentDate.Date.Month, AppointmentDate.Date.Day, 
+                    hour.Value, minutes.Value, 0),
+                Finish = new DateTime(
+                        AppointmentDate.Date.Year, AppointmentDate.Date.Month, AppointmentDate.Date.Day,
+                               hour.Value, minutes.Value + 19, 0),
+                VetId = AppUser.Vet.Id
+        };    
+
+        using var context = ContextFactory.CreateDbContext();
+        context.TimeSlots.Add(timeSlot);
+        await context.SaveChangesAsync();
+
+        await Initialize();
+    }
+
+    private async Task RemoveTimeSlot(EditContext editContext)
+    {
+        var model = editContext.Model as CurrentTimeSlot;
+
+        var userEmail = @AuthenticationState?.User.Identity?.Name;
+
+        if (AppUser == null)
+        {
+            // Handle the case when the user is not found
+            throw new Exception("User not found");
+        }
+
+        if (AppUser.Vet == null)
+        {
+            // Handle the case when the user's Vet is not found
+            throw new Exception("User's Vet not found");
+        }
+
+        int? hour = model?.Hour;
+        int? minutes = model?.Minutes;
+
+        if (!hour.HasValue || hour < 0 || hour > 23)
+        {
+            throw new ArgumentOutOfRangeException("Hour must be between 0 and 23.");
+        }
+        if (!minutes.HasValue || minutes < 0 || minutes > 59)
+        {
+            throw new ArgumentOutOfRangeException("Minute must be between 0 and 59.");
+        }
+
+        var startDateTime = new DateTime(
+            AppointmentDate.Date.Year, AppointmentDate.Date.Month, AppointmentDate.Date.Day,
+            hour.Value, minutes.Value, 0);
+
+        using var context = ContextFactory.CreateDbContext();
+        var timeSlot = await context.TimeSlots
+            .FirstOrDefaultAsync(s => s.Start == startDateTime && s.VetId == AppUser.Vet.Id);
+
+        if (timeSlot == null)
+        {
+            // Handle the case when the time slot is not found
+            throw new Exception("Time slot not found");
+        }
+
+        context.TimeSlots.Remove(timeSlot);
+        await context.SaveChangesAsync();
+
+        await Initialize();
+
+    }
+
+    private async Task HandleBookedSlot(EditContext editContext)
+    {
+        await JS.InvokeVoidAsync("alert", "The timeslot is already booked. Contact admin to remove it.");
+    }
+
+
+
+  
+}
