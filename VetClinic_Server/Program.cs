@@ -59,11 +59,12 @@ app.MapFallbackToPage("/_Host");
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<VetClinicDbContext>();
 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
     context.Database.Migrate();
-    await DbInitializer.Initialize(context, userManager);
+    await DbInitializer.Initialize(context, userManager, roleManager);
 } catch (Exception ex)
 {
     logger.LogError(ex, "A problem occurred during migration");

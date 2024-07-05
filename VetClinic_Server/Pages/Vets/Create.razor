@@ -1,7 +1,11 @@
-﻿@page "/vets/create"
+﻿@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.Services
+
+@page "/vets/create"
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
-@using Microsoft.AspNetCore.Identity
 @inject UserManager<AppUser> UserManager
+@inject StateContainer StateContainer
+@inject NavigationManager NavigationManager
 
 
 <div class="row justify-content-center w-100">
@@ -40,7 +44,7 @@
                 <h4 class="m-0">Create a new vet</h4>
             </div>
             <div class="card-body">
-                <VetForm VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
+                <VetForm OnCancel="NavigateToOverviewPage" VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
             </div>
         </div>
     </div>
@@ -133,5 +137,10 @@
     {
         SuccessMessage = null;
         ErrorMessage = null;
+    }
+
+    private void NavigateToOverviewPage()
+    {
+        NavigationManager.NavigateTo($"/vets/{StateContainer.VetListPage}");
     }
 }

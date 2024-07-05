@@ -26,5 +26,12 @@ namespace VetClinic_Server.Data.Models
         [Required]
         public int? SpeciesId { get; set; }
         public Species? Species { get; set; }
+
+        [Required]
+        public int? OwnerId { get; set; }
+        public Owner? Owner { get; set; }
+
+        [Timestamp]
+        public byte[]? Timestamp { get; set; }
     }
 }

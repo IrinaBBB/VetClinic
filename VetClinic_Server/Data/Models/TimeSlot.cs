@@ -17,5 +17,8 @@ namespace VetClinic_Server.Data.Models
         public int? PetId { get; set; }
         public Pet? Pet { get; set; }
         public string? Description { get; set; }
+
+        [Timestamp]
+        public byte[]? Timestamp { get; set; }
     }
 }

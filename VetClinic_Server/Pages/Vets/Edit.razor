@@ -63,7 +63,7 @@
                     </div>
                 } else
                 {
-                    <VetForm OnCancel="NaviagteToOverviewPage" IsEdit="true" VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
+                    <VetForm OnCancel="NavigateToOverviewPage" IsEdit="true" VetFormViewModel="@VetFormViewModel" Specializations="@Specializations" IsBusy="@IsBusy" OnSubmit="@HandleSubmit" />
                 }
             </div>
         </div>
@@ -187,7 +187,7 @@
         ErrorMessage = null;
     }
 
-    private void NaviagteToOverviewPage()
+    private void NavigateToOverviewPage()
     {
         NavigationManager.NavigateTo($"/vets/{StateContainer.VetListPage}");
     }

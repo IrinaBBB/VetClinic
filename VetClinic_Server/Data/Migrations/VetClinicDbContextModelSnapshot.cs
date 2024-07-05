@@ -47,26 +47,6 @@ namespace VetClinic_Server.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2b51ab51-d0d9-44e1-a9e1-f0fab3563f00",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "38e1428b-c734-4130-830b-5bce7ab8ed38",
-                            Name = "Vet",
-                            NormalizedName = "VET"
-                        },
-                        new
-                        {
-                            Id = "f7e975ec-6546-4e14-809f-585f2446eae9",
-                            Name = "Owner",
-                            NormalizedName = "OWNER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -244,6 +224,50 @@ namespace VetClinic_Server.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("VetClinic_Server.Data.Models.Owner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("Owners");
+                });
+
             modelBuilder.Entity("VetClinic_Server.Data.Models.Pet", b =>
                 {
                     b.Property<int>("Id")
@@ -260,6 +284,10 @@ namespace VetClinic_Server.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
                     b.Property<int>("Sex")
                         .HasMaxLength(10)
                         .HasColumnType("int");
@@ -268,37 +296,18 @@ namespace VetClinic_Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("SpeciesId");
 
                     b.ToTable("Pets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsNeutered = true,
-                            Name = "Buddy",
-                            Sex = 1,
-                            SpeciesId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsNeutered = true,
-                            Name = "Mittens",
-                            Sex = 2,
-                            SpeciesId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IsNeutered = false,
-                            Name = "Goldy",
-                            Sex = 0,
-                            SpeciesId = 3
-                        });
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.Specialization", b =>
@@ -316,35 +325,14 @@ namespace VetClinic_Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.HasKey("Id");
 
                     b.ToTable("Specializations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Specializes in performing surgical procedures on animals, including orthopedic, soft tissue, and minimally invasive surgeries.",
-                            Name = "Veterinary Surgery"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Specializes in dental care for animals, including oral surgery, cleanings, and treatments for dental diseases.",
-                            Name = "Veterinary Dentistry"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Focuses on the diagnosis and treatment of diseases and injuries in pets like dogs and cats.",
-                            Name = "Small Animal Medicine and Surgery"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Focuses on the diagnosis and treatment of diseases and injuries in pets like dogs and cats.",
-                            Name = "Exotic Animal Medicine"
-                        });
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.Species", b =>
@@ -363,26 +351,14 @@ namespace VetClinic_Server.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.HasKey("Id");
 
                     b.ToTable("Species");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Cat"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Dog"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Fish"
-                        });
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.TimeSlot", b =>
@@ -407,6 +383,11 @@ namespace VetClinic_Server.Data.Migrations
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<int>("VetId")
                         .HasColumnType("int");
@@ -529,13 +510,32 @@ namespace VetClinic_Server.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VetClinic_Server.Data.Models.Owner", b =>
+                {
+                    b.HasOne("VetClinic_Server.Data.Models.AppUser", "AppUser")
+                        .WithOne("Owner")
+                        .HasForeignKey("VetClinic_Server.Data.Models.Owner", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("VetClinic_Server.Data.Models.Pet", b =>
                 {
+                    b.HasOne("VetClinic_Server.Data.Models.Owner", "Owner")
+                        .WithMany("Pets")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VetClinic_Server.Data.Models.Species", "Species")
                         .WithMany("Pets")
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Owner");
 
                     b.Navigation("Species");
                 });
@@ -578,7 +578,14 @@ namespace VetClinic_Server.Data.Migrations
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.AppUser", b =>
                 {
+                    b.Navigation("Owner");
+
                     b.Navigation("Vet");
+                });
+
+            modelBuilder.Entity("VetClinic_Server.Data.Models.Owner", b =>
+                {
+                    b.Navigation("Pets");
                 });
 
             modelBuilder.Entity("VetClinic_Server.Data.Models.Specialization", b =>
