@@ -103,8 +103,6 @@
     </div>
 </div>
 
-
-
 @code {
     private DateTime AppointmentDate { get; set; } 
     private AuthenticationState? AuthenticationState { get; set; }
@@ -113,6 +111,7 @@
     public Dictionary<string, TimeSlot> BookedTimeSlots = new Dictionary<string, TimeSlot>();
     private int VetId { get; set; }
     private AppUser? AppUser { get; set; } 
+    private bool IsVet { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -122,13 +121,24 @@
 
     private async Task Initialize()
     {
-        AppointmentDate = DateTime.Now; 
         AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userEmail = @AuthenticationState?.User.Identity?.Name;
         AppUser = await UserManager
                         .Users
                         .Include(u => u.Vet)
                     .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+        if (AppUser != null)
+        {
+            var roles = await UserManager.GetRolesAsync(AppUser);
+            IsVet = roles.Contains("Vet");
+        }
+
+        if (!IsVet)
+        {
+            NavigationManager.NavigateTo("not-authorized");
+        }
+        AppointmentDate = DateTime.Now;
         using var context = ContextFactory.CreateDbContext();
         AvailableTimeSlots = await context.TimeSlots
                 .Where(s => s.PetId == null && s.VetId == AppUser!.Vet!.Id && s.Date == AppointmentDate.Date)
@@ -247,8 +257,4 @@
     {
         await JS.InvokeVoidAsync("alert", "The timeslot is already booked. Contact admin to remove it.");
     }
-
-
-
-  
 }
