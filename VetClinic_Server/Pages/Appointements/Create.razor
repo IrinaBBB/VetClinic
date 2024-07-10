@@ -131,7 +131,6 @@
         get => _appointmentDate ?? StateContainer.VetAppointmentDate;
         set
         {
-
             _appointmentDate = value;
         }
     }
@@ -153,13 +152,13 @@
         Console.WriteLine($"New Appointment Date: {AppointmentDate}");
         await Initialize();
     }
-    private async Task SetAppointmentDateAsync(DateTime value)
-    {
-        StateContainer.VetAppointmentDate = value;
-        _appointmentDate = value; // Update the private field
-        Console.WriteLine($"New Appointment Date: {AppointmentDate}");
-        await Initialize();
-    }
+    // private async Task SetAppointmentDateAsync(DateTime value)
+    // {
+    //     StateContainer.VetAppointmentDate = value;
+    //     _appointmentDate = value; // Update the private field
+    //     Console.WriteLine($"New Appointment Date: {AppointmentDate}");
+    //     await Initialize();
+    // }
 
     private async Task Initialize()
     {

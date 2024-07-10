@@ -1,0 +1,155 @@
+﻿@page "/owners/book"
+@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.Services
+@using Radzen.Blazor
+
+
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+@inject StateContainer StateContainer
+
+
+
+<PageTitle>Book Appointment</PageTitle>
+<style>
+    .rz-calendar .rz-inputtext:not(:disabled):not(.rz-state-disabled):focus {
+        border: 2px solid rgb(47, 196, 5, 0.5);
+        box-shadow: 0 0 1px 1px rgba(47, 196, 5, 0.5)
+    }
+
+
+    .rz-state-active.rz-state-focused .rz-state-default.rz-state-active.rz-datepicker-today.rz-state-focused {
+        background: rgb(47, 196, 5) !important;
+        box-shadow: 0 0 1px 1px rgba(47, 196, 5, 0.5)
+    }
+
+    .rz-datepicker-calendar td .rz-state-active.rz-state-focused, .rz-datepicker-calendar td .rz-state-active:hover, .rz-datepicker-calendar td .rz-state-active.rz-datepicker-today.rz-state-focused, .rz-datepicker-calendar td .rz-state-active.rz-datepicker-today:hover {
+        background-color: rgb(47, 196, 5);
+        box-shadow: 0 0 1px 1px rgba(47, 196, 5, 0.5)
+    }
+</style>
+<div class="container-fluid w-100">
+    <div class="row justify-content-center w-100">
+        
+    <div class="col-xl-10">
+            <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white w-100">
+
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-fw fa-clinic-medical mr-2"></i>Book an appointment
+                </h5>
+                </div>
+
+                <div class="card-header py-3">
+
+                    <div class="col-4">
+                        <RadzenDatePicker @bind-Value=AppointmentDate DateFormat="dd.MM.yyyy" Name="DatePickerInitialViewDate" Change="@(async args => await UpdateTime())" ShowCalendarWeek />
+                     </div>
+                    @if (GroupedAppointments == null)
+                    {
+                        <p>Loading...</p>
+                    } else if (!GroupedAppointments.Any())
+                    {
+                        <p class="mt-4">No available appointments on this day.</p>
+                    } else
+                    {
+
+                        <div class="card-body">
+
+                            @foreach (var vetGroup in GroupedAppointments)
+                            {
+                               
+                                <h4>@vetGroup.Key.FirstName @vetGroup.Key.LastName</h4>
+                                <ul>
+                                    @foreach (var appointment in vetGroup.Value)
+                                    {
+                                        <a href="#" class="btn btn-info btn-icon-split m-2">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-clock"></i>
+                                            </span>
+                                            <span class="text">@appointment.Start.TimeOfDay.ToString(@"hh\:mm")</span>
+                                        </a>
+                                    }
+                                </ul>
+                            }
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AuthenticationState? AuthenticationState { get; set; }
+    private AppUser? AppUser { get; set; }
+    private Owner? Owner { get; set; }
+    private bool IsOwner { get; set; }
+    private DateTime? _appointmentDate;
+    public DateTime AppointmentDate
+    {
+        get => _appointmentDate ?? StateContainer.VetAppointmentDate;
+        set
+        {
+            _appointmentDate = value;
+        }
+    }
+
+    public List<TimeSlot>? FutureAppointments { get; set; }
+    public Dictionary<Vet, List<TimeSlot>>? GroupedAppointments { get; set; }
+
+    private async Task UpdateTime()
+    {
+        Console.WriteLine($"New Appointment Date: {AppointmentDate}");
+        await Initialize();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Initialize();
+    }
+
+    private async Task Initialize()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = AuthenticationState?.User.Identity?.Name;
+        AppUser = await UserManager.Users.Include(u => u.Vet).FirstOrDefaultAsync(u => u.Email == userEmail);
+
+        if (AppUser != null)
+        {
+            var roles = await UserManager.GetRolesAsync(AppUser);
+            IsOwner = roles.Contains("Owner");
+        }
+
+        if (!IsOwner)
+        {
+            NavigationManager.NavigateTo("not-authorized");
+            return;
+        }
+
+        try
+        {
+            using var context = ContextFactory.CreateDbContext();
+            FutureAppointments = await context.TimeSlots
+            .Include(ts => ts.Vet)
+            .Where(ts => ts.Start.Date == AppointmentDate.Date)
+            .ToListAsync();
+
+            GroupedAppointments = FutureAppointments
+                 .OrderBy(ts => ts.Start)
+                 .GroupBy(ts => ts.Vet)
+                 .ToDictionary(
+                     g => g.Key,
+                     g => g.ToList()
+                 );
+        } catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            Owner = null;
+        }
+    } 
+}
+

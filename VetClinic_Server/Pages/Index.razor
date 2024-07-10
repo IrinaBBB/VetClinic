@@ -4,11 +4,12 @@
 
 @inject NavigationManager NavigationManager
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
-@inject StateContainer StateContainer
-@inject UserManager<AppUser> UserManager
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+@inject StateContainer StateContainer
 
-<div class="container-fluid">
+@* <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
@@ -100,16 +101,47 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@
 
 
 @code {
 
-    private int? AppointmentsCount { get; set; }
-    protected override async Task OnParametersSetAsync()
-    {
-        using var context = ContextFactory.CreateDbContext();
-        AppointmentsCount = context.TimeSlots.Count();
+    private AuthenticationState? AuthenticationState { get; set; }
+    private AppUser? AppUser { get; set; }
+    private bool IsAdmin { get; set; }
+    private bool IsVet { get; set; }
+    private bool IsOwner { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = AuthenticationState?.User.Identity?.Name;
+        AppUser = await UserManager.Users.Include(u => u.Vet).FirstOrDefaultAsync(u => u.Email == userEmail);
+
+        if (AppUser != null)
+        {
+            var roles = await UserManager.GetRolesAsync(AppUser);
+            IsAdmin = roles.Contains("Admin");
+            IsVet = roles.Contains("Vet");
+            IsOwner = roles.Contains("Owner");
+        }
+
+        if (IsVet)
+        {
+            NavigationManager.NavigateTo("/vets/main");
+        }
+
+        if (IsOwner)
+        {
+            NavigationManager.NavigateTo("/owners/main");
+        }
     }
+
+    // private int? AppointmentsCount { get; set; }
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     using var context = ContextFactory.CreateDbContext();
+    //     AppointmentsCount = context.TimeSlots.Count();
+
+    // }
 }

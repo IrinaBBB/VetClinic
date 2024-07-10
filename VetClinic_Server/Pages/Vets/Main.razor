@@ -1,0 +1,19 @@
+﻿@page "/vets/main"
+
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+
+<PageTitle>Vet Details</PageTitle>
+<style>
+
+ </style>
+ <h1>Vet Main</h1>
+@code {
+    private AuthenticationState? AuthenticationState { get; set; }
+    private AppUser? AppUser { get; set; }
+    private bool IsAdmin { get; set; }
+    private bool IsVet { get; set; }
+    private bool IsPet { get; set; }
+    
+}
+

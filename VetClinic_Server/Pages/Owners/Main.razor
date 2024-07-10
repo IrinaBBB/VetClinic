@@ -1,0 +1,164 @@
+﻿@page "/owners/main"
+@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+
+
+<PageTitle>Owner Details</PageTitle>
+<style>
+    .owner-card {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+    }
+
+    .pet-card {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+    }
+
+    .pet-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card owner-card shadow">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-fw fa-user"></i>
+                    <h5 class="card-title mb-0">Owner Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 font-weight-bold">Owner Name</h6>
+                    <p class="card-text">@Owner?.FirstName @Owner?.LastName</p>
+                    <h6 class="card-subtitle mb-2 font-weight-bold">Email</h6>
+                    <p class="card-text">@Owner?.Email</p>
+                    <h6 class="card-subtitle mb-2 font-weight-bold">Address</h6>
+                    <p class="card-text">@Owner?.Address</p>
+                    <h6 class="card-subtitle mb-2 font-weight-bold">Contact Number</h6>
+                    <p class="card-text">@Owner?.PhoneNumber</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card pet-card shadow">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-fw fa-paw"></i>
+                    <h5 class="card-title mb-0">Pets</h5>
+                </div>
+                @if (Owner?.Pets?.Count > 0)
+                {
+                    <ul class="list-group list-group-flush pet-list">
+                        @foreach (var pet in Owner.Pets)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-subtitle mb-2 font-weight-bold">Pet Name</h6>
+                                        <p class="card-text">@pet.Name</p>
+                                        <h6 class="card-subtitle mb-2 font-weight-bold">Type</h6>
+                                        <p class="card-text">
+                                            @pet.Species?.Name
+                                            <i class="fas fa-fw @AssignIcon(pet?.Species?.Name)"></i>
+                                        </p>
+                                    </div>
+                                    @if (pet.Sex != Sex.Unknown)
+                                    {
+                                        <span class="badge badge-pill badge-info align-self-center">@pet.Sex</span>
+
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                } else
+                {
+                    <ul class="list-group list-group-flush pet-list">
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="card-text">No pets are registered for @Owner?.FirstName @Owner?.LastName</p>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private AuthenticationState? AuthenticationState { get; set; }
+    private AppUser? AppUser { get; set; }
+    private Owner? Owner { get; set; }
+    private bool IsOwner { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = AuthenticationState?.User.Identity?.Name;
+        AppUser = await UserManager.Users.Include(u => u.Vet).FirstOrDefaultAsync(u => u.Email == userEmail);
+
+        if (AppUser != null)
+        {
+            var roles = await UserManager.GetRolesAsync(AppUser);
+            IsOwner = roles.Contains("Owner");
+        }
+
+        if (!IsOwner)
+        {
+            NavigationManager.NavigateTo("not-authorized");
+            return;
+        }
+
+        try
+        {
+            using var context = ContextFactory.CreateDbContext();
+            Owner = await context.Owners
+                .Include(o => o.Pets)
+                .ThenInclude(p => p.Species)
+                .FirstOrDefaultAsync(o => o.Email == AppUser.Email);
+        } catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            Owner = null;
+        }
+    }
+
+
+
+    private string AssignIcon(string speciesName)
+    {
+        switch (speciesName)
+        {
+            case "Canine":
+                return "fa-dog";
+
+            case "Feline":
+                return "fa-cat";
+
+            case "Avian":
+                return "fa-kiwi-bird";
+
+            case "Reptile":
+                return "fa-reptile";
+
+            case "Rodent":
+                return "fa-mouse";
+
+            default:
+                return "";
+
+        }
+    }
+}
+
+
