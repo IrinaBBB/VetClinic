@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using VetClinic_Server.Services
+@using VetClinic_Server.ViewModels.Appointments
+@using Radzen
+@using Radzen.Blazor
+
+
+@inject DialogService DialogService
+@inject IDbContextFactory<VetClinicDbContext> ContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+@inject StateContainer StateContainer
+
+<EditForm Model="BookTimeSlotViewModel" OnValidSubmit="@HandleSubmitBooking">
+    <DataAnnotationsValidator />
+    <div class="form-group col-6">
+        <label for="BookTimeSlotViewModel.TimeSlot">Time Slot</label>
+        <div id="TimeSlot" class="form-control">@BookTimeSlotViewModel.TimeSlot.ToString("dd:MM:yyyy hh:mm")</div>
+    </div>
+    <div class="form-group col-6">
+        <label for="VetName">Vet Name</label>
+        <InputText id="VetName" class="form-control" @bind-Value="BookTimeSlotViewModel.VetName" ReadOnly />
+    </div>
+    <div class="form-group col-6">
+        <InputSelect placeholder="Password" class="form-control" @bind-Value="BookTimeSlotViewModel.SelectedPetId">
+            @if (BookTimeSlotViewModel.Pets is not null)
+            {
+                @foreach (var pet in BookTimeSlotViewModel.Pets)
+                {
+                    <option value="@pet.Id">@pet.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-end my-2">
+        <button type="button" @onclick="@((args) => DialogService.Close(false))" class="btn btn-secondary btn-icon-split mr-3">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+            </span>
+            <span class="text px-4">Cancel</span>
+        </button>
+        <button type="submit" class="btn btn-primary btn-icon-split mr-3">
+            <span class="icon text-white-50">
+                <i class="fas fa-check"></i>
+            </span>
+            <span class="text px-4">Book</span>
+        </button>
+    </div>
+  
+</EditForm>
+
+@code {
+    [Parameter]
+    public DateTime TimeSlot { get; set; }
+
+    [Parameter]
+    public string? VetName { get; set; }
+
+    [Parameter]
+    public Owner? Owner { get; set; }
+
+    public AuthenticationState? AuthenticationState { get; set; }
+
+    public BookTimeSlotViewModel BookTimeSlotViewModel { get; set; } = new BookTimeSlotViewModel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = AuthenticationState?.User.Identity?.Name;
+        var AppUser = await UserManager.Users.Include(u => u.Owner).ThenInclude(o => o.Pets).FirstOrDefaultAsync(u => u.Email == userEmail);
+
+        if (AppUser != null && AppUser.Owner != null)
+        {
+            Owner = AppUser.Owner;
+            BookTimeSlotViewModel.TimeSlot = TimeSlot;
+            BookTimeSlotViewModel.VetName = VetName;
+            BookTimeSlotViewModel.Pets = Owner.Pets.ToList();
+        }
+    }
+
+    private async Task HandleSubmitBooking()
+    {
+        using var context = ContextFactory.CreateDbContext();
+        Console.Write("OK - BOOKED");
+
+        // var booking = new TimeSlot
+        //     {
+        //         TimeSlot = BookTimeSlotViewModel.TimeSlot,
+        //         VetName = BookTimeSlotViewModel.VetName,
+        //         PetId = BookTimeSlotViewModel.SelectedPetId,
+        //     };
+
+        // context.TimeSlots.Update(booking);
+        // await context.SaveChangesAsync();
+
+        DialogService.Close(true);
+    }
+}

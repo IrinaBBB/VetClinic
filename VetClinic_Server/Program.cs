@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using BlazorIdentityDemo.Areas.Identity;
 using VetClinic_Server.Data.DbInitializer;
 using VetClinic_Server.Services;
+using Radzen;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,9 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VetClinicDbContext>();
 
+builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<StateContainer>();
+builder.Services.AddScoped<DialogService>();
 
 var app = builder.Build();
 
