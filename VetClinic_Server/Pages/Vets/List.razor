@@ -8,6 +8,7 @@
 @inject UserManager<AppUser> UserManager
 @inject IJSRuntime JS
 
+@attribute [Authorize(Roles = "Vet")]
 
 <div class="d-flex justify-content-between col-12 mb-3">
     <h1 class="h3 mb-0 text-gray-800">Vets</h1>

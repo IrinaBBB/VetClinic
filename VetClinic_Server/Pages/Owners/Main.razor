@@ -6,8 +6,10 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<AppUser> UserManager
 
+@attribute [Authorize(Roles = "Owner")]
 
 <PageTitle>Owner Details</PageTitle>
+
 <style>
     .owner-card {
         background-color: #f8f9fa;
@@ -24,6 +26,7 @@
         overflow-y: auto;
     }
 </style>
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
@@ -103,21 +106,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userEmail = AuthenticationState?.User.Identity?.Name;
-        AppUser = await UserManager.Users.Include(u => u.Vet).FirstOrDefaultAsync(u => u.Email == userEmail);
+        // AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var userEmail = AuthenticationState?.User.Identity?.Name;
+        // AppUser = await UserManager.Users.Include(u => u.Vet).FirstOrDefaultAsync(u => u.Email == userEmail);
 
-        if (AppUser != null)
-        {
-            var roles = await UserManager.GetRolesAsync(AppUser);
-            IsOwner = roles.Contains("Owner");
-        }
+        // if (AppUser != null)
+        // {
+        //     var roles = await UserManager.GetRolesAsync(AppUser);
+        //     IsOwner = roles.Contains("Owner");
+        // }
 
-        if (!IsOwner)
-        {
-            NavigationManager.NavigateTo("not-authorized");
-            return;
-        }
+        // if (!IsOwner)
+        // {
+        //     NavigationManager.NavigateTo("not-authorized");
+        //     return;
+        // }
 
         try
         {

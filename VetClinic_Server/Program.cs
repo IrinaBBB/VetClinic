@@ -17,9 +17,12 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
 builder.Services.AddDbContextFactory<VetClinicDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("VetClinicDb")));
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<VetClinicDbContext>();
+//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<VetClinicDbContext>();
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<VetClinicDbContext>().AddDefaultTokenProviders()
+                .AddDefaultUI();
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<StateContainer>();

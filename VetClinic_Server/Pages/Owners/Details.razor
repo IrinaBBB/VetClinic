@@ -4,6 +4,8 @@
 @inject NavigationManager NavigationManager
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
 
+@attribute [Authorize(Roles = "Owner")]
+
 <PageTitle>Owner Details</PageTitle>
 <style>
     .owner-card {
@@ -91,9 +93,7 @@
 @code {
     [Parameter]
     public int? OwnerId { get; set; }
-
-
-
+    
     private Owner? Owner { get; set; }
 
     protected override async Task OnParametersSetAsync()
@@ -116,8 +116,6 @@
             Console.Error.WriteLine(ex);
             Owner = null;
         }
-
-
     }
 
     private string AssignIcon(string speciesName)

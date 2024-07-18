@@ -3,6 +3,9 @@
 @inject NavigationManager NavigationManager
 @inject IDbContextFactory<VetClinicDbContext> ContextFactory
 
+@attribute [Authorize(Roles = "Vet")]
+
+
 <PageTitle>Vet Details</PageTitle>
 <style>
 

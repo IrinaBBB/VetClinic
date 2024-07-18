@@ -10,9 +10,9 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<AppUser> UserManager
 @inject StateContainer StateContainer
-
 @inject DialogService DialogService
 
+@attribute [Authorize(Roles = "Owner")]
 
 <PageTitle>Book Appointment</PageTitle>
 <style>
@@ -116,22 +116,22 @@
 
     private async Task Initialize()
     {
-        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userEmail = AuthenticationState?.User.Identity?.Name;
-        AppUser = await UserManager.Users.Include(u => u.Owner).ThenInclude(o => o.Pets).FirstOrDefaultAsync(u => u.Email == userEmail);
+        // AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var userEmail = AuthenticationState?.User.Identity?.Name;
+        // AppUser = await UserManager.Users.Include(u => u.Owner).ThenInclude(o => o.Pets).FirstOrDefaultAsync(u => u.Email == userEmail);
 
-        if (AppUser != null)
-        {
-            var roles = await UserManager.GetRolesAsync(AppUser);
-            IsOwner = roles.Contains("Owner");
-            Owner = AppUser.Owner;
-        }
+        // if (AppUser != null)
+        // {
+        //     var roles = await UserManager.GetRolesAsync(AppUser);
+        //     IsOwner = roles.Contains("Owner");
+        //     Owner = AppUser.Owner;
+        // }
 
-        if (!IsOwner)
-        {
-            NavigationManager.NavigateTo("not-authorized");
-            return;
-        }
+        // if (!IsOwner)
+        // {
+        //     NavigationManager.NavigateTo("not-authorized");
+        //     return;
+        // }
 
         try
         {
