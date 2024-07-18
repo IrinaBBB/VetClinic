@@ -22,10 +22,11 @@
         <InputText id="VetName" class="form-control" @bind-Value="BookTimeSlotViewModel.VetName" ReadOnly />
     </div>
     <div class="form-group col-6">
-        <InputSelect placeholder="Password" class="form-control" @bind-Value="BookTimeSlotViewModel.SelectedPetId">
-            @if (BookTimeSlotViewModel.Pets is not null)
+        <label>For Pet</label>
+        <InputSelect class="form-control" @bind-Value="BookTimeSlotViewModel.SelectedPetId">
+            @if (Pets is not null)
             {
-                @foreach (var pet in BookTimeSlotViewModel.Pets)
+                @foreach (var pet in Pets)
                 {
                     <option value="@pet.Id">@pet.Name</option>
                 }
@@ -48,10 +49,12 @@
     </div>
   
 </EditForm>
-
 @code {
     [Parameter]
     public DateTime TimeSlot { get; set; }
+
+    [Parameter]
+    public int AppointmentId { get; set; }
 
     [Parameter]
     public string? VetName { get; set; }
@@ -63,18 +66,22 @@
 
     public BookTimeSlotViewModel BookTimeSlotViewModel { get; set; } = new BookTimeSlotViewModel();
 
+    public Pet[]? Pets { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userEmail = AuthenticationState?.User.Identity?.Name;
         var AppUser = await UserManager.Users.Include(u => u.Owner).ThenInclude(o => o.Pets).FirstOrDefaultAsync(u => u.Email == userEmail);
+        using var context = ContextFactory.CreateDbContext();
+
+        Pets = await context.Pets.Where(p => p.OwnerId == Owner.Id).ToArrayAsync();
 
         if (AppUser != null && AppUser.Owner != null)
         {
             Owner = AppUser.Owner;
             BookTimeSlotViewModel.TimeSlot = TimeSlot;
             BookTimeSlotViewModel.VetName = VetName;
-            BookTimeSlotViewModel.Pets = Owner.Pets.ToList();
         }
     }
 
@@ -83,16 +90,13 @@
         using var context = ContextFactory.CreateDbContext();
         Console.Write("OK - BOOKED");
 
-        // var booking = new TimeSlot
-        //     {
-        //         TimeSlot = BookTimeSlotViewModel.TimeSlot,
-        //         VetName = BookTimeSlotViewModel.VetName,
-        //         PetId = BookTimeSlotViewModel.SelectedPetId,
-        //     };
+        var timeSlot = await context.TimeSlots.FindAsync(AppointmentId);
 
-        // context.TimeSlots.Update(booking);
-        // await context.SaveChangesAsync();
+        timeSlot.PetId = BookTimeSlotViewModel.SelectedPetId;
+        context.TimeSlots.Update(timeSlot);
+        await context.SaveChangesAsync();
 
+     
         DialogService.Close(true);
     }
 }

@@ -68,7 +68,7 @@
                                 <ul>
                                     @foreach (var appointment in vetGroup.Value)
                                     {
-                                         <button class="btn btn-warning btn-icon-split m-2" @onclick="(() => ShowDialog(appointment.Start, vetName))">
+                                         <button class="btn btn-warning btn-icon-split m-2" @onclick="(() => ShowDialog(appointment.Id, appointment.Start, vetName))">
                                             <span class="icon text-white-50">
                                                 <i class="fas fa-clock"></i>
                                             </span>
@@ -155,11 +155,12 @@
         }
     } 
 
-    public async Task ShowDialog(DateTime appointmentTime, string vetName)
+    public async Task ShowDialog(int appointmentId, DateTime appointmentTime, string vetName)
     {
         var parameters = new Dictionary<string, object>
         {
             { "TimeSlot", appointmentTime },
+            { "AppointmentId", appointmentId },
             { "VetName", vetName },
             { "Owner", Owner },
         };

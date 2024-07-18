@@ -18,7 +18,7 @@
                 <InputText placeholder="Password" class="form-control" disabled="@IsDisabled" @bind-Value="VetFormViewModel.Password" />
             </div>
             <div class="form-group col-6">
-                <InputSelect placeholder="Password" class="form-control" @bind-Value="VetFormViewModel.SpecializationId">
+                <InputSelect class="form-control" @bind-Value="VetFormViewModel.SpecializationId">
                     @if (Specializations is not null)
                     {
                         @foreach (var specialization in Specializations)
@@ -94,6 +94,7 @@
     public bool IsBusy { get; set; }
     [Parameter]
     public bool IsEdit { get; set; }
+
 
     private bool IsDisabled => VetFormViewModel?.Password == "N/A";
 
